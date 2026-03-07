@@ -1,0 +1,13 @@
+.partner-buyers-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Reuse other styles from Sales.css and PartnerDashboard.css */

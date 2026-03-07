@@ -1,0 +1,11 @@
+D:\Desktop\Project\SalesERP\SalesERP.Models\bin\Debug\net10.0\SalesERP.Models.deps.json
+D:\Desktop\Project\SalesERP\SalesERP.Models\bin\Debug\net10.0\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.Models\bin\Debug\net10.0\SalesERP.Models.pdb
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.AssemblyInfoInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.AssemblyInfo.cs
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.csproj.CoreCompileInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\refint\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.pdb
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\ref\SalesERP.Models.dll

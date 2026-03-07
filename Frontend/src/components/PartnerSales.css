@@ -1,0 +1,55 @@
+.partner-sales-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Reuse most styles from Sales.css */
+
+.license-key-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.license-key {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #333;
+  background: #f5f5f5;
+  padding: 0.375rem 0.625rem;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-copy {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 0.375rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.commission {
+  color: #4caf50 !important;
+}
+
+.notes-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.875rem;
+  color: #666;
+}

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../SalesERP.Data/SalesERP.Data.csproj" />
+  <Project Path="../SalesERP.Models/SalesERP.Models.csproj" />
+  <Project Path="SalesERP.API.csproj" />
+</Solution>
