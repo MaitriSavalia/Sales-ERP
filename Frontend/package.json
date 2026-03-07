@@ -1,6 +1,7 @@
 {
   "name": "sales-erp-frontend",
   "version": "1.0.0",
+  "homepage": ".",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
