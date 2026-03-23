@@ -125,7 +125,7 @@ function App() {
             <Sidebar user={user} onLogout={handleLogout} isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
           </>
         )}
-        <div className={user ? 'main-content' : ''}>
+        <div className={user ? 'main-content' : ''} style={{ width: '100%' }}>
           <Routes>
             <Route path="/login"    element={!user ? <Login setUser={setUser} /> : <Navigate to="/dashboard" />} />
             <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
