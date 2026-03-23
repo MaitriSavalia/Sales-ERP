@@ -12,7 +12,7 @@ function Sales() {
   const storedUser = sessionStorage.getItem(`user_${tabId}`);
   const userRole = storedUser ? JSON.parse(storedUser).userRole : null;
 
-  useEffect(() => { fetchSales(); }, [fetchSales]);
+  useEffect(() => { fetchSales(); }, []);
 
   const fetchSales = async () => {
     try {
