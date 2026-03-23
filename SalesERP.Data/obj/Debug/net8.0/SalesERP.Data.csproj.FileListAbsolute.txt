@@ -1,0 +1,16 @@
+D:\Desktop\Project\SalesERP\SalesERP.Data\bin\Debug\net8.0\SalesERP.Data.deps.json
+D:\Desktop\Project\SalesERP\SalesERP.Data\bin\Debug\net8.0\SalesERP.Data.dll
+D:\Desktop\Project\SalesERP\SalesERP.Data\bin\Debug\net8.0\SalesERP.Data.pdb
+D:\Desktop\Project\SalesERP\SalesERP.Data\bin\Debug\net8.0\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.Data\bin\Debug\net8.0\SalesERP.Models.pdb
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.csproj.AssemblyReference.cache
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.AssemblyInfoInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.AssemblyInfo.cs
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.csproj.CoreCompileInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.sourcelink.json
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.D3CFD79C.Up2Date
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.dll
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\refint\SalesERP.Data.dll
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\SalesERP.Data.pdb
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net8.0\ref\SalesERP.Data.dll

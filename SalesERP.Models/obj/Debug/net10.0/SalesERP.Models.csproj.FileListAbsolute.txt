@@ -9,3 +9,4 @@ D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.dl
 D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\refint\SalesERP.Models.dll
 D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.pdb
 D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\ref\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.Models\obj\Debug\net10.0\SalesERP.Models.sourcelink.json

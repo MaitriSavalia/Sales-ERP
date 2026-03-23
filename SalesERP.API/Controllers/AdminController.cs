@@ -6,6 +6,7 @@ using SalesERP.Models;
 using SalesERP.Models.DTOs;
 using SalesERP.Data;
 using SalesERP.Data.Repositories;
+using SalesERP.Services;
 
 namespace SalesERP.API.Controllers
 {
@@ -17,17 +18,23 @@ namespace SalesERP.API.Controllers
         private readonly IProductRepository _productRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly IUserRepository _userRepository;
+        // ✅ REMOVED: private readonly IAdminPartnerMappingRepository _mappingRepository;
+        private readonly IEmailService _emailService;
         private readonly ApplicationDbContext _context;
 
         public AdminController(
             IProductRepository productRepository,
             ISaleRepository saleRepository,
             IUserRepository userRepository,
+            // ✅ REMOVED: IAdminPartnerMappingRepository mappingRepository,
+            IEmailService emailService,
             ApplicationDbContext context)
         {
             _productRepository = productRepository;
             _saleRepository = saleRepository;
             _userRepository = userRepository;
+            // ✅ REMOVED: _mappingRepository = mappingRepository;
+            _emailService = emailService;
             _context = context;
         }
 
@@ -62,7 +69,7 @@ namespace SalesERP.API.Controllers
                     TotalProducts = productsList.Count,
                     TotalSales = adminSales.Count,
                     TotalRevenue = adminSales.Sum(s => s.SaleAmount),
-                    TotalCommissionPaid = adminSales.Where(s => s.PaymentStatus == "Completed").Sum(s => s.CommissionAmount),
+                    TotalCommissionPaid = adminSales.Where(s => s.CommissionPaymentStatus == "Completed").Sum(s => s.CommissionAmount), // ✅ RENAMED
                     ActivePartners = activePartnerIds.Count
                 };
 
@@ -138,6 +145,55 @@ namespace SalesERP.API.Controllers
 
                 var createdProduct = await _productRepository.CreateAsync(product);
                 Console.WriteLine($"✅ Product created: ID {createdProduct.ProductId}");
+
+                // Get admin info for email
+                var admin = await _userRepository.GetByIdAsync(adminId);
+                var adminName = admin?.FullName ?? "Admin";
+
+                // ✅ NEW: Get all partners who have this admin in their AdminIds
+                var allPartners = await _context.Users
+                    .Where(u => u.UserRole == "Partner" && u.AdminIds != null && u.AdminIds.Contains(adminId.ToString()))
+                    .ToListAsync();
+
+                Console.WriteLine($"📧 Sending email notifications to {allPartners.Count} partner(s)...");
+
+                // Send emails asynchronously (don't wait)
+                if (allPartners.Count > 0)
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        foreach (var partner in allPartners)
+                        {
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(partner.Email))
+                                {
+                                    Console.WriteLine($"📨 Sending email to: {partner.Email}");
+                                    
+                                    await _emailService.SendNewProductNotificationAsync(
+                                        partner.Email,
+                                        partner.FullName,
+                                        createdProduct.ProductName,
+                                        adminName,
+                                        createdProduct.Price,
+                                        createdProduct.CommissionPercentage
+                                    );
+                                    
+                                    Console.WriteLine($"✅ Email sent to: {partner.Email}");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"❌ Failed to send email to partner {partner.UserId}: {ex.Message}");
+                            }
+                        }
+                        Console.WriteLine($"✅ All email notifications processed!");
+                    });
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ No active partners to notify");
+                }
 
                 return Ok(new { message = "Product created successfully", productId = createdProduct.ProductId });
             }
@@ -253,8 +309,9 @@ namespace SalesERP.API.Controllers
                     SaleAmount = s.SaleAmount,
                     CommissionAmount = s.CommissionAmount,
                     SaleDate = s.SaleDate,
-                    PaymentStatus = s.PaymentStatus,
-                    LicenseKey = s.LicenseKey,
+                    CommissionPaymentStatus = s.CommissionPaymentStatus, // ✅ RENAMED
+                    SalePaymentStatus = s.SalePaymentStatus,             // ✅ RENAMED
+                    LicenseKey = s.LicenseKey ?? "",
                     Notes = s.Notes
                 }).ToList();
 
@@ -267,13 +324,13 @@ namespace SalesERP.API.Controllers
             }
         }
 
-        [HttpPut("sales/{id}/status")]
-        public async Task<IActionResult> UpdateSaleStatus(int id, [FromBody] UpdateSaleStatusDto statusDto)
+        [HttpPut("sales/{id}/commission-status")] // ✅ RENAMED ENDPOINT
+        public async Task<IActionResult> UpdateCommissionStatus(int id, [FromBody] UpdateCommissionPaymentStatusDto statusDto) // ✅ RENAMED DTO
         {
             try
             {
                 var adminId = GetCurrentUserId();
-                Console.WriteLine($"📝 Updating sale {id} status to {statusDto.PaymentStatus}");
+                Console.WriteLine($"📝 Updating sale {id} commission status to {statusDto.CommissionPaymentStatus}");
 
                 var sale = await _saleRepository.GetByIdAsync(id);
 
@@ -290,15 +347,52 @@ namespace SalesERP.API.Controllers
                     return Forbid();
                 }
 
-                sale.PaymentStatus = statusDto.PaymentStatus;
+                sale.CommissionPaymentStatus = statusDto.CommissionPaymentStatus; // ✅ RENAMED
                 await _saleRepository.UpdateAsync(sale);
 
-                Console.WriteLine($"✅ Sale {id} status updated to {statusDto.PaymentStatus}");
-                return Ok(new { message = "Sale status updated successfully" });
+                Console.WriteLine($"✅ Sale {id} commission status updated to {statusDto.CommissionPaymentStatus}");
+                return Ok(new { message = "Commission status updated successfully" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Update sale status error: {ex.Message}");
+                Console.WriteLine($"❌ Update commission status error: {ex.Message}");
+                Console.WriteLine($"Stack: {ex.StackTrace}");
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("sales/{id}/sale-payment-status")] // ✅ RENAMED ENDPOINT
+        public async Task<IActionResult> UpdateSalePaymentStatus(int id, [FromBody] UpdateSalePaymentStatusDto statusDto) // ✅ RENAMED DTO
+        {
+            try
+            {
+                var adminId = GetCurrentUserId();
+                Console.WriteLine($"📝 Updating sale {id} payment status to {statusDto.SalePaymentStatus}");
+
+                var sale = await _saleRepository.GetByIdAsync(id);
+
+                if (sale == null)
+                {
+                    Console.WriteLine($"❌ Sale not found: {id}");
+                    return NotFound(new { message = "Sale not found" });
+                }
+
+                var product = await _productRepository.GetByIdAsync(sale.ProductId);
+                if (product == null || product.AdminId != adminId)
+                {
+                    Console.WriteLine($"❌ Admin {adminId} not authorized for sale {id}");
+                    return Forbid();
+                }
+
+                sale.SalePaymentStatus = statusDto.SalePaymentStatus; // ✅ RENAMED
+                await _saleRepository.UpdateAsync(sale);
+
+                Console.WriteLine($"✅ Sale {id} payment status updated to {statusDto.SalePaymentStatus}");
+                return Ok(new { message = "Sale payment status updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Update sale payment status error: {ex.Message}");
                 Console.WriteLine($"Stack: {ex.StackTrace}");
                 return StatusCode(500, new { message = ex.Message });
             }
@@ -316,24 +410,24 @@ namespace SalesERP.API.Controllers
                 var adminId = GetCurrentUserId();
                 Console.WriteLine($"👥 Getting partners for Admin ID: {adminId}");
 
-                var mappings = await _context.AdminPartnerMappings
-                    .Include(m => m.Partner)
-                    .Where(m => m.AdminId == adminId && m.IsActive)
-                    .OrderByDescending(m => m.MappedAt)
+                // ✅ NEW: Find partners where AdminIds contains this admin's ID
+                var partners = await _context.Users
+                    .Where(u => u.UserRole == "Partner" && 
+                                u.AdminIds != null && 
+                                u.AdminIds.Contains(adminId.ToString()))
+                    .OrderByDescending(u => u.CreatedAt)
                     .ToListAsync();
 
-                Console.WriteLine($"✅ Found {mappings.Count} partners");
+                Console.WriteLine($"✅ Found {partners.Count} partners");
 
-                var partnerDtos = mappings.Select(m => new
+                var partnerDtos = partners.Select(p => new
                 {
-                    mappingId = m.MappingId,
-                    partnerId = m.PartnerId,
-                    partnerName = m.Partner?.FullName ?? "Unknown",
-                    partnerEmail = m.Partner?.Email ?? "",
-                    partnerCompany = m.Partner?.CompanyName,
-                    partnerPhone = m.Partner?.PhoneNumber,
-                    mappedAt = m.MappedAt,
-                    isActive = m.IsActive
+                    partnerId = p.UserId,
+                    partnerName = p.FullName,
+                    partnerEmail = p.Email,
+                    partnerCompany = p.CompanyName,
+                    partnerPhone = p.PhoneNumber,
+                    mappedAt = p.CreatedAt
                 }).ToList();
 
                 return Ok(partnerDtos);
@@ -364,45 +458,24 @@ namespace SalesERP.API.Controllers
 
                 Console.WriteLine($"✅ Found partner: {partner.FullName} (ID: {partner.UserId})");
 
-                var existingMapping = await _context.AdminPartnerMappings
-                    .FirstOrDefaultAsync(m => m.AdminId == adminId && m.PartnerId == partner.UserId);
-
-                if (existingMapping != null)
+                // ✅ NEW: Check if this admin is already in partner's AdminIds
+                var existingAdminIds = partner.AdminIds?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+                
+                if (existingAdminIds.Contains(adminId.ToString()))
                 {
-                    if (existingMapping.IsActive)
-                    {
-                        Console.WriteLine($"⚠️ Already mapped");
-                        return BadRequest(new { message = "This partner is already in your network" });
-                    }
-                    else
-                    {
-                        existingMapping.IsActive = true;
-                        existingMapping.MappedAt = DateTime.UtcNow;
-                        _context.AdminPartnerMappings.Update(existingMapping);
-                        await _context.SaveChangesAsync();
-
-                        Console.WriteLine($"✅ Reactivated mapping");
-                        return Ok(new
-                        {
-                            message = "Partner re-added to your network",
-                            partnerName = partner.FullName,
-                            partnerEmail = partner.Email
-                        });
-                    }
+                    Console.WriteLine($"⚠️ Already mapped");
+                    return BadRequest(new { message = "This partner is already in your network" });
                 }
 
-                var newMapping = new AdminPartnerMapping
-                {
-                    AdminId = adminId,
-                    PartnerId = partner.UserId,
-                    MappedAt = DateTime.UtcNow,
-                    IsActive = true
-                };
+                // ✅ NEW: Add this admin to partner's AdminIds
+                existingAdminIds.Add(adminId.ToString());
+                partner.AdminIds = string.Join(",", existingAdminIds);
+                partner.UpdatedAt = DateTime.UtcNow;
 
-                _context.AdminPartnerMappings.Add(newMapping);
+                _context.Users.Update(partner);
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine($"✅ New mapping created: Admin {adminId} → Partner {partner.UserId}");
+                Console.WriteLine($"✅ Partner added: Admin {adminId} added to Partner {partner.UserId}'s AdminIds");
 
                 return Ok(new
                 {
@@ -428,19 +501,29 @@ namespace SalesERP.API.Controllers
                 var adminId = GetCurrentUserId();
                 Console.WriteLine($"🗑️ Admin {adminId} removing partner {partnerId}");
 
-                var mapping = await _context.AdminPartnerMappings
-                    .FirstOrDefaultAsync(m => m.AdminId == adminId && m.PartnerId == partnerId);
+                var partner = await _context.Users.FindAsync(partnerId);
 
-                if (mapping == null)
+                if (partner == null || partner.UserRole != "Partner")
+                {
+                    return NotFound(new { message = "Partner not found" });
+                }
+
+                // ✅ NEW: Remove this admin from partner's AdminIds
+                var adminIdsList = partner.AdminIds?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+                
+                if (!adminIdsList.Contains(adminId.ToString()))
                 {
                     return NotFound(new { message = "Partner mapping not found" });
                 }
 
-                mapping.IsActive = false;
-                _context.AdminPartnerMappings.Update(mapping);
+                adminIdsList.Remove(adminId.ToString());
+                partner.AdminIds = adminIdsList.Count > 0 ? string.Join(",", adminIdsList) : null;
+                partner.UpdatedAt = DateTime.UtcNow;
+
+                _context.Users.Update(partner);
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine($"✅ Partner removed (deactivated)");
+                Console.WriteLine($"✅ Partner removed from network");
 
                 return Ok(new { message = "Partner removed from your network" });
             }
@@ -482,43 +565,5 @@ namespace SalesERP.API.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
-        [HttpPut("sales/{id}/buyer-payment-status")]
-public async Task<IActionResult> UpdateBuyerPaymentStatus(int id, [FromBody] UpdateBuyerPaymentStatusDto statusDto)
-{
-    try
-    {
-        var adminId = GetCurrentUserId();
-        Console.WriteLine($"📝 Updating sale {id} buyer payment status to {statusDto.BuyerPaymentStatus}");
-
-        var sale = await _saleRepository.GetByIdAsync(id);
-
-        if (sale == null)
-        {
-            Console.WriteLine($"❌ Sale not found: {id}");
-            return NotFound(new { message = "Sale not found" });
-        }
-
-        var product = await _productRepository.GetByIdAsync(sale.ProductId);
-        if (product == null || product.AdminId != adminId)
-        {
-            Console.WriteLine($"❌ Admin {adminId} not authorized for sale {id}");
-            return Forbid();
-        }
-
-        sale.BuyerPaymentStatus = statusDto.BuyerPaymentStatus;
-        await _saleRepository.UpdateAsync(sale);
-
-        Console.WriteLine($"✅ Sale {id} buyer payment status updated to {statusDto.BuyerPaymentStatus}");
-        return Ok(new { message = "Buyer payment status updated successfully" });
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Update buyer payment status error: {ex.Message}");
-        Console.WriteLine($"Stack: {ex.StackTrace}");
-        return StatusCode(500, new { message = ex.Message });
-    }
-}
-    }
-    
 }

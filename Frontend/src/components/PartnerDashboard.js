@@ -132,10 +132,10 @@ function PartnerDashboard() {
                         borderRadius: '20px',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        background: s.paymentStatus === 'Completed' ? '#d1fae5' : '#fee2e2',
-                        color: s.paymentStatus === 'Completed' ? '#065f46' : '#991b1b'
+                        background: s.commissionPaymentStatus === 'Completed' ? '#d1fae5' : '#fee2e2',
+                        color: s.commissionPaymentStatus === 'Completed' ? '#065f46' : '#991b1b'
                       }}>
-                        {s.paymentStatus === 'Completed' ? 'Paid' : 'Unpaid'}
+                        {s.commissionPaymentStatus === 'Completed' ? 'Paid' : 'Unpaid'}
                       </span>
                     </td>
                   </tr>

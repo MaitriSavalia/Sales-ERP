@@ -4,7 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SalesERP.Data;
 using SalesERP.Data.Repositories;
-using SalesERP.API.Services;
+using SalesERP.Services;
+using SalesERP.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,16 +16,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Configure Email Settings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+// Register Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
-builder.Services.AddScoped<IAdminPartnerMappingRepository, AdminPartnerMappingRepository>();
+
+
+// Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
-#pragma warning disable CS8604 // Possible null reference argument.
-var key = Encoding.ASCII.GetBytes(jwtKey);
-#pragma warning restore CS8604 // Possible null reference argument.
+var key = Encoding.ASCII.GetBytes(jwtKey!);
 
 builder.Services.AddAuthentication(options =>
 {

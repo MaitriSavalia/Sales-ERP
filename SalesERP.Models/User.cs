@@ -37,6 +37,8 @@ namespace SalesERP.Models
         [MaxLength(20)]
         public string? AdminCode { get; set; }
 
+        public string? AdminIds { get; set; }
+
         [Required]
         public DateTime CreatedAt { get; set; }
 

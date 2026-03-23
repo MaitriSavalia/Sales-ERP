@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SalesERP.Models
 {
@@ -18,40 +17,38 @@ namespace SalesERP.Models
         public int BuyerId { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         public decimal SaleAmount { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         public decimal CommissionAmount { get; set; }
 
         [Required]
         public DateTime SaleDate { get; set; }
 
-        // Partner commission payment status (Pending/Completed/Cancelled)
-        [Required]
-        [MaxLength(50)]
-        public string PaymentStatus { get; set; } = string.Empty;
-
-        // Buyer payment status (Pending/Paid/Failed)
+        // ✅ RENAMED: Was "PaymentStatus"
         [Required]
         [MaxLength(20)]
-        public string BuyerPaymentStatus { get; set; } = "Pending";
+        public string CommissionPaymentStatus { get; set; } = "Pending";
 
+        // ✅ RENAMED: Was "BuyerPaymentStatus"
         [Required]
-        [MaxLength(100)]
-        public string LicenseKey { get; set; } = string.Empty;
+        [MaxLength(20)]
+        public string SalePaymentStatus { get; set; } = "Pending";
 
+        [MaxLength(100)]
+        public string? LicenseKey { get; set; }
+
+        [MaxLength(500)]
         public string? Notes { get; set; }
 
+        [Required]
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
         // Navigation properties
-        [ForeignKey("ProductId")]
-        public virtual Product? Product { get; set; }
-
-        [ForeignKey("PartnerId")]
-        public virtual User? Partner { get; set; }
-
-        [ForeignKey("BuyerId")]
-        public virtual User? Buyer { get; set; }
+        public Product? Product { get; set; }
+        public User? Partner { get; set; }
+        public User? Buyer { get; set; }
     }
 }

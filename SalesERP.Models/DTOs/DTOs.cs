@@ -74,8 +74,8 @@
         public decimal SaleAmount { get; set; }
         public decimal CommissionAmount { get; set; }
         public DateTime SaleDate { get; set; }
-        public string PaymentStatus { get; set; } = string.Empty;
-        public string BuyerPaymentStatus { get; set; } = "Pending";
+        public string CommissionPaymentStatus { get; set; } = string.Empty;  // ✅ RENAMED
+        public string SalePaymentStatus { get; set; } = string.Empty;        // ✅ RENAMED
         public string LicenseKey { get; set; } = string.Empty;
         public string? Notes { get; set; }
     }
@@ -87,14 +87,14 @@
         public string? Notes { get; set; }
     }
 
-    public class UpdateSaleStatusDto
+    public class UpdateCommissionPaymentStatusDto  // ✅ RENAMED CLASS
     {
-        public string PaymentStatus { get; set; } = string.Empty;
+        public string CommissionPaymentStatus { get; set; } = string.Empty;
     }
 
-    public class UpdateBuyerPaymentStatusDto
+    public class UpdateSalePaymentStatusDto  // ✅ RENAMED CLASS
     {
-        public string BuyerPaymentStatus { get; set; } = string.Empty;
+        public string SalePaymentStatus { get; set; } = string.Empty;
     }
 
     // ========== ADMIN DASHBOARD DTOs ==========

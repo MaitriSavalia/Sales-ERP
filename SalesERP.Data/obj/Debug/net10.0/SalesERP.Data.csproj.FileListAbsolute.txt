@@ -55,6 +55,7 @@ D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.Genera
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.AssemblyInfoInputs.cache
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.AssemblyInfo.cs
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.csproj.CoreCompileInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.sourcelink.json
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.D3CFD79C.Up2Date
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\SalesERP.Data.dll
 D:\Desktop\Project\SalesERP\SalesERP.Data\obj\Debug\net10.0\refint\SalesERP.Data.dll

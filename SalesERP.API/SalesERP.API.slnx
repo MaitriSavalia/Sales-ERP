@@ -1,5 +1,6 @@
 <Solution>
-  <Project Path="../SalesERP.Data/SalesERP.Data.csproj" />
-  <Project Path="../SalesERP.Models/SalesERP.Models.csproj" />
-  <Project Path="SalesERP.API.csproj" />
+  <Project Path="D:/Desktop/Project/SalesERP/SalesERP.API/SalesERP.API.csproj" />
+  <Project Path="D:/Desktop/Project/SalesERP/SalesERP.Data/SalesERP.Data.csproj" />
+  <Project Path="D:/Desktop/Project/SalesERP/SalesERP.Models/SalesERP.Models.csproj" />
+  <Project Path="D:/Desktop/Project/SalesERP/SalesERP.Services/SalesERP.Services.csproj" Id="b505d8f8-2169-4255-ac4e-52667f253733" />
 </Solution>

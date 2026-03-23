@@ -13,7 +13,7 @@ namespace SalesERP.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Sale> Sales { get; set; }
-        public DbSet<AdminPartnerMapping> AdminPartnerMappings { get; set; }
+        // ✅ REMOVED: public DbSet<AdminPartnerMapping> AdminPartnerMappings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,27 +55,7 @@ namespace SalesERP.Data
                     .HasConstraintName("FK_Products_Admins");
             });
 
-            // Configure AdminPartnerMapping relationships
-            modelBuilder.Entity<AdminPartnerMapping>(entity =>
-            {
-                entity.HasKey(e => e.MappingId);
-
-                entity.HasOne(e => e.Admin)
-                    .WithMany()
-                    .HasForeignKey(e => e.AdminId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_Mapping_Admins");
-
-                entity.HasOne(e => e.Partner)
-                    .WithMany()
-                    .HasForeignKey(e => e.PartnerId)
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("FK_Mapping_Partners");
-
-                // Unique constraint: one partner can only map to one admin once
-                entity.HasIndex(e => new { e.AdminId, e.PartnerId })
-                    .IsUnique();
-            });
+            // ✅ REMOVED: All AdminPartnerMapping configuration
 
             // Configure User
             modelBuilder.Entity<User>(entity =>
@@ -98,11 +78,7 @@ namespace SalesERP.Data
             modelBuilder.Entity<Sale>()
                 .HasIndex(s => s.BuyerId);
 
-            modelBuilder.Entity<AdminPartnerMapping>()
-                .HasIndex(m => m.PartnerId);
-
-            modelBuilder.Entity<AdminPartnerMapping>()
-                .HasIndex(m => m.AdminId);
+            // ✅ REMOVED: AdminPartnerMapping indexes
         }
     }
 }

@@ -3,59 +3,69 @@
   "WorkspaceRootPath": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A5B410AC-182A-20F7-9CFF-C4ADAC1362F1}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\saleserp.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E034D87-4926-8449-6464-C447A9569FF4}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\repositories\\repositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\saleserp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:saleserp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\partnercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:controllers\\partnercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\sdk\\10.0.102\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.PackageDependencyResolution.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\saleserp.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:saleserp.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{577E738B-CAB7-6C28-E0B1-34DC4DF977CD}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E034D87-4926-8449-6464-C447A9569FF4}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{577E738B-CAB7-6C28-E0B1-34DC4DF977CD}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{577E738B-CAB7-6C28-E0B1-34DC4DF977CD}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\partnercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:controllers\\partnercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{577E738B-CAB7-6C28-E0B1-34DC4DF977CD}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\sale.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A5B410AC-182A-20F7-9CFF-C4ADAC1362F1}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\repositories\\repositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{33581A95-7693-D544-10EF-B92F554D4173}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A5B410AC-182A-20F7-9CFF-C4ADAC1362F1}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E034D87-4926-8449-6464-C447A9569FF4}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\saleserp.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{33581A95-7693-D544-10EF-B92F554D4173}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\saleserp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{85FED9E8-7641-1973-3AE2-08526919EBEF}|SalesERP.API.csproj|solutionrelative:saleserp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{A5B410AC-182A-20F7-9CFF-C4ADAC1362F1}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\migrations\\20260125080516_addadminpartnermapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E034D87-4926-8449-6464-C447A9569FF4}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\migrations\\20260125080516_addadminpartnermapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5E034D87-4926-8449-6464-C447A9569FF4}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\migrations\\20260124085157_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A5B410AC-182A-20F7-9CFF-C4ADAC1362F1}|..\\SalesERP.Data\\SalesERP.Data.csproj|d:\\desktop\\project\\saleserp\\saleserp.data\\migrations\\20260124085157_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{33581A95-7693-D544-10EF-B92F554D4173}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\sale.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{33581A95-7693-D544-10EF-B92F554D4173}|..\\SalesERP.Models\\SalesERP.Models.csproj|d:\\desktop\\project\\saleserp\\saleserp.models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|d:\\desktop\\project\\saleserp\\saleserp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EE903E3-9D92-9103-E798-F15014AC362D}|SalesERP.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -65,60 +75,83 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AgIAAFoHAAAAAAAAAAAmwGAHAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-03-08T08:31:46.69Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Repositories.cs",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\Repositories\\Repositories.cs",
-              "RelativeDocumentMoniker": "..\\SalesERP.Data\\Repositories\\Repositories.cs",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\Repositories\\Repositories.cs",
-              "RelativeToolTip": "..\\SalesERP.Data\\Repositories\\Repositories.cs",
-              "ViewState": "AgIAAGYBAAAAAAAAAAAywHUBAAAtAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T13:32:48.039Z"
+              "Title": "SalesERP.API",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
+              "RelativeDocumentMoniker": "SalesERP.API.csproj",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
+              "RelativeToolTip": "SalesERP.API.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-03-08T08:31:44.606Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAIwBUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T13:33:24.866Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "PartnerController.cs",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\PartnerController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PartnerController.cs",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\PartnerController.cs",
-              "RelativeToolTip": "Controllers\\PartnerController.cs",
-              "ViewState": "AgIAAJIBAAAAAAAAAAAkwKQBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T13:36:25.948Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "Controllers\\AdminController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAALYBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T13:36:00.621Z",
+              "Title": "Microsoft.PackageDependencyResolution.targets",
+              "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\10.0.102\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.PackageDependencyResolution.targets",
+              "ToolTip": "C:\\Program Files\\dotnet\\sdk\\10.0.102\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.PackageDependencyResolution.targets",
+              "ViewState": "AgIAAGkAAAAAAAAAAAAEwG8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-03-08T08:27:38.338Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "SalesERP.API",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
+              "RelativeDocumentMoniker": "SalesERP.API.csproj",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
+              "RelativeToolTip": "SalesERP.API.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-03-08T08:27:10.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAIwBMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T13:33:24.866Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SalesERP.Data.csproj",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\SalesERP.Data.csproj",
+              "RelativeDocumentMoniker": "..\\SalesERP.Data\\SalesERP.Data.csproj",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\SalesERP.Data.csproj",
+              "RelativeToolTip": "..\\SalesERP.Data\\SalesERP.Data.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-13T13:24:48.91Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "AuthService.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "Services\\AuthService.cs",
@@ -130,7 +163,43 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T13:36:00.621Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "PartnerController.cs",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\PartnerController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PartnerController.cs",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\PartnerController.cs",
+              "RelativeToolTip": "Controllers\\PartnerController.cs",
+              "ViewState": "AgIAAJIBAAAAAAAAAAAkwKQBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T13:36:25.948Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Repositories.cs",
+              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\Repositories\\Repositories.cs",
+              "RelativeDocumentMoniker": "..\\SalesERP.Data\\Repositories\\Repositories.cs",
+              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\Repositories\\Repositories.cs",
+              "RelativeToolTip": "..\\SalesERP.Data\\Repositories\\Repositories.cs",
+              "ViewState": "AgIAAGYBAAAAAAAAAAAywHUBAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T13:32:48.039Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "DTOs.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Models\\DTOs\\DTOs.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Models\\DTOs\\DTOs.cs",
@@ -142,7 +211,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 11,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Data\\ApplicationDbContext.cs",
@@ -154,7 +223,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 12,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Models\\User.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Models\\User.cs",
@@ -166,7 +235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 13,
               "Title": "20260125080516_AddAdminPartnerMapping.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\Migrations\\20260125080516_AddAdminPartnerMapping.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Data\\Migrations\\20260125080516_AddAdminPartnerMapping.cs",
@@ -178,7 +247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -202,7 +271,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 16,
               "Title": "Sale.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Models\\Sale.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Models\\Sale.cs",
@@ -214,7 +283,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 17,
               "Title": "Product.cs",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Models\\Product.cs",
               "RelativeDocumentMoniker": "..\\SalesERP.Models\\Product.cs",
@@ -226,7 +295,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 18,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -235,30 +304,6 @@
               "ViewState": "AgIAAAEAAAAAAAAAAAAgwBEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-01-13T13:33:58.54Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "SalesERP.API.csproj",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
-              "RelativeDocumentMoniker": "SalesERP.API.csproj",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.API\\SalesERP.API.csproj",
-              "RelativeToolTip": "SalesERP.API.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-13T13:17:33.392Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "SalesERP.Data.csproj",
-              "DocumentMoniker": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\SalesERP.Data.csproj",
-              "RelativeDocumentMoniker": "..\\SalesERP.Data\\SalesERP.Data.csproj",
-              "ToolTip": "D:\\Desktop\\Project\\SalesERP\\SalesERP.Data\\SalesERP.Data.csproj",
-              "RelativeToolTip": "..\\SalesERP.Data\\SalesERP.Data.csproj",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAiwBUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-13T13:24:48.91Z"
             }
           ]
         }

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find D:/Desktop/Project/SalesERP/Frontend/public -type f -name *.json -o -name favicon* -o -name *.png -o -name *.svg -o -name *.ico)"
+    ]
+  }
+}

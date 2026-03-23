@@ -15,6 +15,7 @@
           "Microsoft.EntityFrameworkCore.Tools": "10.0.1",
           "SalesERP.Data": "1.0.0",
           "SalesERP.Models": "1.0.0",
+          "SalesERP.Services": "1.0.0",
           "Swashbuckle.AspNetCore.Swagger": "10.1.0",
           "Swashbuckle.AspNetCore.SwaggerGen": "10.1.0",
           "Swashbuckle.AspNetCore.SwaggerUI": "10.1.0"
@@ -957,6 +958,17 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "SalesERP.Services/1.0.0": {
+        "dependencies": {
+          "SalesERP.Models": "1.0.0"
+        },
+        "runtime": {
+          "SalesERP.Services.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -1385,6 +1397,11 @@
       "sha512": ""
     },
     "SalesERP.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SalesERP.Services/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

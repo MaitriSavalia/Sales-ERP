@@ -70,28 +70,20 @@ function Login({ setUser }) {
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
+          <img src="/logo.svg" alt="SalesPilot" style={{
             width: '80px',
             height: '80px',
-            background: 'linear-gradient(135deg, #f97316 0%, #fb923c 100%)',
-            borderRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             margin: '0 auto 1.5rem',
-            fontSize: '2.5rem',
-            color: 'white',
-            fontWeight: '700'
-          }}>
-            S
-          </div>
+            display: 'block',
+            borderRadius: '20px'
+          }} />
           <h1 style={{
             fontSize: '2rem',
             fontWeight: '700',
             color: '#1e293b',
             marginBottom: '0.5rem'
           }}>
-            Sales ERP
+            SalesPilot
           </h1>
           <p style={{ color: '#64748b', fontSize: '1rem' }}>
             Welcome back

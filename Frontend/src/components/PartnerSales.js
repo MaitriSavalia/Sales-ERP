@@ -6,12 +6,12 @@ const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency:
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 // Map payment status to commission status display
-const getCommissionStatus = (paymentStatus) => {
-  return paymentStatus === 'Completed' ? 'Paid' : 'Unpaid';
+const getCommissionStatus = (commissionPaymentStatus) => {
+  return commissionPaymentStatus === 'Completed' ? 'Paid' : 'Unpaid';
 };
 
-const commissionStatusStyle = (paymentStatus) => {
-  return paymentStatus === 'Completed' 
+const commissionStatusStyle = (commissionPaymentStatus) => {
+  return commissionPaymentStatus === 'Completed' 
     ? { background: '#d1fae5', color: '#065f46' }  // Green for Paid
     : { background: '#fee2e2', color: '#991b1b' }; // Red for Unpaid
 };
@@ -26,7 +26,7 @@ function PartnerSales() {
 
   useEffect(() => { loadSales(); }, []);
   useEffect(() => {
-    setFilteredSales(statusFilter === 'All' ? sales : sales.filter(s => getCommissionStatus(s.paymentStatus) === statusFilter));
+    setFilteredSales(statusFilter === 'All' ? sales : sales.filter(s => getCommissionStatus(s.commissionPaymentStatus) === statusFilter));
   }, [sales, statusFilter]);
 
   const loadSales = async () => {
@@ -46,7 +46,7 @@ function PartnerSales() {
 
   const totalRevenue = filteredSales.reduce((s, x) => s + x.saleAmount, 0);
   const totalCommission = filteredSales.reduce((s, x) => s + x.commissionAmount, 0);
-  const paidCommission = filteredSales.filter(x => x.paymentStatus === 'Completed').reduce((s, x) => s + x.commissionAmount, 0);
+  const paidCommission = filteredSales.filter(x => x.commissionPaymentStatus === 'Completed').reduce((s, x) => s + x.commissionAmount, 0);
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', color: '#64748b', fontSize: '1.1rem' }}>
@@ -127,9 +127,9 @@ function PartnerSales() {
                           borderRadius: '20px', 
                           fontSize: '0.8rem', 
                           fontWeight: '600',
-                          ...commissionStatusStyle(s.paymentStatus)
+                          ...commissionStatusStyle(s.commissionPaymentStatus)
                         }}>
-                          {getCommissionStatus(s.paymentStatus)}
+                          {getCommissionStatus(s.commissionPaymentStatus)}
                         </span>
                       </td>
                       <td style={{ padding: '1rem' }}>

@@ -195,8 +195,10 @@ D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\runtimes\win-x86\nati
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\System.Windows.Extensions.dll
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Data.dll
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Models.dll
+D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Services.dll
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Data.pdb
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Models.pdb
+D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net10.0\SalesERP.Services.pdb
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.csproj.AssemblyReference.cache
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\rpswa.dswa.cache.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.GeneratedMSBuildEditorConfig.editorconfig
@@ -205,6 +207,7 @@ D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.Assembly
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.csproj.CoreCompileInputs.cache
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.MvcApplicationPartsAssemblyInfo.cs
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.MvcApplicationPartsAssemblyInfo.cache
+D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\SalesERP.API.sourcelink.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
