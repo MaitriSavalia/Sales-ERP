@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -12,7 +12,7 @@ function Sales() {
   const storedUser = sessionStorage.getItem(`user_${tabId}`);
   const userRole = storedUser ? JSON.parse(storedUser).userRole : null;
 
-  useEffect(() => { fetchSales(); }, []);
+  useEffect(() => { fetchSales(); }, [fetchSales]);
 
   const fetchSales = async () => {
     try {

@@ -4,14 +4,6 @@ import { Package, DollarSign, ShoppingCart, TrendingUp, Users } from 'lucide-rea
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(n || 0);
 
-const statusStyle = (s) => ({
-  padding: '0.25rem 0.75rem',
-  borderRadius: '20px',
-  fontSize: '0.8rem',
-  fontWeight: '600',
-  background: s === 'Completed' ? '#d1fae5' : s === 'Pending' ? '#fef3c7' : '#fee2e2',
-  color: s === 'Completed' ? '#065f46' : s === 'Pending' ? '#92400e' : '#991b1b',
-});
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
