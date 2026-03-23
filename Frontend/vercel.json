@@ -1,6 +1,6 @@
 {
-  "installCommand": "npm install",
-  "buildCommand": "npx react-scripts build",
+  "installCommand": "npm install && chmod +x node_modules/.bin/*",
+  "buildCommand": "react-scripts build",
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
