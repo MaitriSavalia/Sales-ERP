@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5261/api';
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -10,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
 api.interceptors.request.use(
   (config) => {
     const tabId = sessionStorage.getItem('tabId');
@@ -39,13 +37,12 @@ export const adminService = {
   updateProduct: (id, data) => api.put(`/admin/products/${id}`, data),
   deleteProduct: (id) => api.delete(`/admin/products/${id}`),
   getSales: () => api.get('/admin/sales'),
-  updateSaleStatus: (id, data) => api.put(`/admin/sales/${id}/status`, data),
-  
-  // Partner Management
-  getMyPartners: () => api.get('/admin/my-partners'),
-  addPartner: (data) => api.post('/admin/add-partner', data),
-  removePartner: (partnerId) => api.delete(`/admin/remove-partner/${partnerId}`),
-  searchPartners: (email) => api.get('/admin/search-partners', { params: { email } }),
+  updateCommissionStatus: (id, data) => api.put(`/admin/sales/${id}/commission-status`, data),
+  updateSaleStatus: (id, data) => api.put(`/admin/sales/${id}/sale-status`, data),
+  getMyPartners: () => api.get('/admin/partners'),
+  addPartner: (data) => api.post('/admin/partners', data),
+  removePartner: (partnerId) => api.delete(`/admin/partners/${partnerId}`),
+  getTopPartners: () => api.get('/admin/top-partners'),
 };
 
 // Partner Service
@@ -53,11 +50,8 @@ export const partnerService = {
   getDashboard: () => api.get('/partner/dashboard'),
   getProducts: () => api.get('/partner/products'),
   getBuyers: () => api.get('/partner/buyers'),
-  searchBuyers: (email) => api.get('/partner/buyers/search', { params: { email } }),
-  canSellToBuyer: (productId, buyerId) => api.get(`/partner/products/${productId}/can-sell/${buyerId}`),
   getSales: () => api.get('/partner/sales'),
   createSale: (data) => api.post('/partner/sales', data),
-  getMyAdmins: () => api.get('/partner/my-admins'),
 };
 
 export default api;

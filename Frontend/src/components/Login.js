@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api';
 import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import useIsMobile from '../hooks/useIsMobile';
+
+const roleMap = { 1: 'Admin', 2: 'Partner', 3: 'Buyer' };
 
 function Login({ setUser }) {
   const [email, setEmail] = useState('');
@@ -9,6 +12,7 @@ function Login({ setUser }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const tabId = Date.now().toString();
@@ -30,16 +34,21 @@ function Login({ setUser }) {
 
       console.log('✅ Login response:', response.data);
 
-      const tabId = sessionStorage.getItem('tabId');
-      sessionStorage.setItem(`user_${tabId}`, JSON.stringify(response.data));
-      sessionStorage.setItem(`token_${tabId}`, response.data.token);
+      const userData = {
+        ...response.data,
+        userRole: roleMap[response.data.userRole] || response.data.userRole
+      };
 
-      setUser(response.data);
+      const tabId = sessionStorage.getItem('tabId');
+      sessionStorage.setItem(`user_${tabId}`, JSON.stringify(userData));
+      sessionStorage.setItem(`token_${tabId}`, userData.token);
+
+      setUser(userData);
       navigate('/dashboard');
     } catch (error) {
       console.error('❌ Login error:', error);
       console.error('Error response:', error.response?.data);
-      
+
       if (error.response?.status === 404) {
         setError('User not found. Please check your email.');
       } else if (error.response?.status === 401) {
@@ -59,12 +68,12 @@ function Login({ setUser }) {
       alignItems: 'center',
       justifyContent: 'center',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem'
+      padding: isMobile ? '1rem' : '2rem'
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '24px',
-        padding: '3rem',
+        borderRadius: isMobile ? '16px' : '24px',
+        padding: isMobile ? '1.5rem' : '3rem',
         width: '100%',
         maxWidth: '450px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
@@ -77,17 +86,10 @@ function Login({ setUser }) {
             display: 'block',
             borderRadius: '20px'
           }} />
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: '700',
-            color: '#1e293b',
-            marginBottom: '0.5rem'
-          }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.5rem' }}>
             SalesPilot
           </h1>
-          <p style={{ color: '#64748b', fontSize: '1rem' }}>
-            Welcome back
-          </p>
+          <p style={{ color: '#64748b', fontSize: '1rem' }}>Welcome back</p>
         </div>
 
         {error && (
@@ -140,7 +142,8 @@ function Login({ setUser }) {
                   borderRadius: '12px',
                   fontSize: '1rem',
                   transition: 'all 0.2s ease',
-                  outline: 'none'
+                  outline: 'none',
+                  boxSizing: 'border-box'
                 }}
                 onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
                 onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
@@ -180,7 +183,8 @@ function Login({ setUser }) {
                   borderRadius: '12px',
                   fontSize: '1rem',
                   transition: 'all 0.2s ease',
-                  outline: 'none'
+                  outline: 'none',
+                  boxSizing: 'border-box'
                 }}
                 onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
                 onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
@@ -223,14 +227,7 @@ function Login({ setUser }) {
           fontSize: '0.875rem'
         }}>
           Don't have an account?{' '}
-          <Link
-            to="/register"
-            style={{
-              color: '#3b82f6',
-              fontWeight: '600',
-              textDecoration: 'none'
-            }}
-          >
+          <Link to="/register" style={{ color: '#3b82f6', fontWeight: '600', textDecoration: 'none' }}>
             Register here
           </Link>
         </div>

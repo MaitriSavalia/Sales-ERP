@@ -4,6 +4,7 @@ D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.Generated
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.AssemblyInfoInputs.cache
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.AssemblyInfo.cs
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.csproj.CoreCompileInputs.cache
+D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.MvcApplicationPartsAssemblyInfo.cs
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.MvcApplicationPartsAssemblyInfo.cache
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.sourcelink.json
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net8.0\appsettings.Development.json
@@ -130,7 +131,6 @@ D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net8.0\SalesERP.Services.dll
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net8.0\SalesERP.Data.pdb
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net8.0\SalesERP.Models.pdb
 D:\Desktop\Project\SalesERP\SalesERP.API\bin\Debug\net8.0\SalesERP.Services.pdb
-D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\SalesERP.API.MvcApplicationPartsAssemblyInfo.cs
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\Desktop\Project\SalesERP\SalesERP.API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json

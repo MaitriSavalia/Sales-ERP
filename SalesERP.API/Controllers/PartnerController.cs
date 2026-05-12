@@ -1,353 +1,233 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using SalesERP.Data;
 using SalesERP.Models;
 using SalesERP.Models.DTOs;
-using SalesERP.Data;
-using SalesERP.Data.Repositories;
+using SalesERP.Repositories;
+using System.Security.Claims;
 
-namespace SalesERP.API.Controllers
+namespace SalesERP.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "Partner")]
     public class PartnerController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
         private readonly IProductRepository _productRepository;
         private readonly ISaleRepository _saleRepository;
         private readonly IUserRepository _userRepository;
-        // ✅ REMOVED: private readonly IAdminPartnerMappingRepository _mappingRepository;
-        private readonly ApplicationDbContext _context;
 
         public PartnerController(
+            ApplicationDbContext context,
             IProductRepository productRepository,
             ISaleRepository saleRepository,
-            IUserRepository userRepository,
-            // ✅ REMOVED: IAdminPartnerMappingRepository mappingRepository,
-            ApplicationDbContext context)
+            IUserRepository userRepository)
         {
+            _context = context;
             _productRepository = productRepository;
             _saleRepository = saleRepository;
             _userRepository = userRepository;
-            // ✅ REMOVED: _mappingRepository = mappingRepository;
-            _context = context;
-        }
-
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
         }
 
         // ========================================
-        // PRODUCTS
+        // Dashboard Statistics
         // ========================================
-
-        [HttpGet("products")]
-        public async Task<IActionResult> GetProducts()
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboardStats()
         {
-            try
+            var partnerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var sales = await _context.Sales
+                .Where(s => s.PartnerID == partnerId)
+                .ToListAsync();
+
+            var totalSales = sales.Count;
+            var totalRevenue = sales.Sum(s => s.SaleAmount);
+            var totalCommission = sales.Sum(s => s.CommissionAmount);
+            var paidCommission = sales
+                .Where(s => s.CommissionPaymentStatus == "Completed")
+                .Sum(s => s.CommissionAmount);
+
+            return Ok(new
             {
-                var partnerId = GetCurrentUserId();
-                Console.WriteLine($"📦 Getting products for Partner ID: {partnerId}");
+                totalSales,
+                totalRevenue,
+                totalCommission,
+                paidCommission
+            });
+        }
 
-                // ✅ NEW: Get admin IDs from partner's AdminIds column
-                var partner = await _userRepository.GetByIdAsync(partnerId);
-                var adminIds = partner?.AdminIds?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(id => int.Parse(id))
-                    .ToList() ?? new List<int>();
+        // ========================================
+        // Available Products
+        // ========================================
+        [HttpGet("products")]
+        public async Task<IActionResult> GetAvailableProducts()
+        {
+            var partnerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-                Console.WriteLine($"👥 Partner works with {adminIds.Count} admin(s): {string.Join(", ", adminIds)}");
+            var partner = await _userRepository.GetByIdAsync(partnerId);
+            if (partner == null || string.IsNullOrEmpty(partner.AdminIDs))
+            {
+                return Ok(new List<ProductDto>());
+            }
 
-                if (adminIds.Count == 0)
+            var adminIds = partner.AdminIDs.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(e => e.Split(':')[0].Trim())
+                .Where(id => int.TryParse(id, out _))
+                .Select(int.Parse)
+                .ToList();
+
+            var products = await _context.Products
+                .Include(p => p.Admin)
+                .Where(p => adminIds.Contains(p.AdminID) && p.IsActive)
+                .Select(p => new ProductDto
                 {
-                    Console.WriteLine("⚠️ No admin mappings found for this partner");
-                    return Ok(new List<ProductDto>());
-                }
-
-                var products = await _context.Products
-                    .Include(p => p.Admin)
-                    .Where(p => adminIds.Contains(p.AdminId) && p.IsActive)
-                    .ToListAsync();
-
-                Console.WriteLine($"✅ Found {products.Count} products");
-
-                var productDtos = products.Select(p => new ProductDto
-                {
-                    ProductId = p.ProductId,
+                    ProductID = p.ProductID,
                     ProductName = p.ProductName,
                     Description = p.Description,
                     Price = p.Price,
-                    CommissionPercentage = p.CommissionPercentage,
-                    AdminId = p.AdminId,
-                    AdminName = p.Admin?.FullName,
+                    CommissionPercentage = (int)p.CommissionPercentage,
+                    AdminID = p.AdminID,
+                    AdminName = p.Admin!.FullName,
                     IsActive = p.IsActive,
                     CreatedAt = p.CreatedAt
-                }).ToList();
+                })
+                .ToListAsync();
 
-                return Ok(productDtos);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Get products error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
+            return Ok(products);
         }
 
         // ========================================
-        // SALES
+        // Sales Management
         // ========================================
-
         [HttpGet("sales")]
-        public async Task<IActionResult> GetSales()
+        public async Task<IActionResult> GetMySales()
         {
-            try
-            {
-                var partnerId = GetCurrentUserId();
-                Console.WriteLine($"💰 Getting sales for Partner ID: {partnerId}");
+            var partnerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-                var sales = await _saleRepository.GetByPartnerIdAsync(partnerId);
-                var salesList = sales.ToList();
-
-                Console.WriteLine($"✅ Found {salesList.Count} sales");
-
-                var saleDtos = salesList.Select(s => new SaleDto
+            var sales = await _context.Sales
+                .Include(s => s.Product)
+                .Include(s => s.Buyer)
+                .Where(s => s.PartnerID == partnerId)
+                .Select(s => new SaleDto
                 {
-                    SaleId = s.SaleId,
-                    ProductId = s.ProductId,
-                    ProductName = s.Product?.ProductName ?? "Unknown",
-                    PartnerId = s.PartnerId,
-                    PartnerName = s.Partner?.FullName ?? "Unknown",
-                    BuyerId = s.BuyerId,
-                    BuyerName = s.Buyer?.FullName ?? "Unknown",
-                    BuyerEmail = s.Buyer?.Email ?? "",
-                    BuyerCompany = s.Buyer?.CompanyName,
+                    SaleID = s.SaleID,
+                    ProductID = s.ProductID,
+                    ProductName = s.Product.ProductName,
+                    PartnerID = s.PartnerID,
+                    PartnerName = "",
+                    BuyerID = s.BuyerID,
+                    BuyerName = s.Buyer.FullName,
+                    BuyerEmail = s.Buyer.Email,
+                    BuyerCompany = s.Buyer.CompanyName,
                     SaleAmount = s.SaleAmount,
                     CommissionAmount = s.CommissionAmount,
                     SaleDate = s.SaleDate,
-                    CommissionPaymentStatus = s.CommissionPaymentStatus, // ✅ RENAMED
-                    SalePaymentStatus = s.SalePaymentStatus,             // ✅ RENAMED
-                    LicenseKey = s.LicenseKey ?? "",
+                    CommissionPaymentStatus = s.CommissionPaymentStatus,
+                    SalePaymentStatus = s.SalePaymentStatus,
+                    LicenseKey = s.LicenseKey,
                     Notes = s.Notes
-                }).ToList();
+                })
+                .OrderByDescending(s => s.SaleDate)
+                .ToListAsync();
 
-                return Ok(saleDtos);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Get sales error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
+            return Ok(sales);
         }
 
         [HttpPost("sales")]
-        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto saleDto)
+        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto dto)
         {
-            try
+            var partnerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            var product = await _productRepository.GetByIdAsync(dto.ProductID);
+            if (product == null || !product.IsActive)
             {
-                var partnerId = GetCurrentUserId();
-                Console.WriteLine($"💰 Creating sale for Partner ID: {partnerId}");
+                return NotFound(new { message = "Product not found or inactive" });
+            }
 
-                var product = await _productRepository.GetByIdAsync(saleDto.ProductId);
-                if (product == null)
+            var buyer = await _userRepository.GetByEmailAsync(dto.BuyerEmail);
+            if (buyer == null)
+            {
+                buyer = new User
                 {
-                    Console.WriteLine($"❌ Product not found: {saleDto.ProductId}");
-                    return NotFound(new { message = "Product not found" });
-                }
-
-                if (!product.IsActive)
-                {
-                    Console.WriteLine($"❌ Product is inactive: {saleDto.ProductId}");
-                    return BadRequest(new { message = "Product is inactive" });
-                }
-
-                var buyer = await _userRepository.GetByIdAsync(saleDto.BuyerId);
-                if (buyer == null || buyer.UserRole != "Buyer")
-                {
-                    Console.WriteLine($"❌ Buyer not found or invalid role: {saleDto.BuyerId}");
-                    return NotFound(new { message = "Buyer not found" });
-                }
-
-                var commissionAmount = (product.Price * product.CommissionPercentage) / 100;
-
-                var sale = new Sale
-                {
-                    ProductId = saleDto.ProductId,
-                    PartnerId = partnerId,
-                    BuyerId = saleDto.BuyerId,
-                    SaleAmount = product.Price,
-                    CommissionAmount = commissionAmount,
-                    SaleDate = DateTime.UtcNow,
-                    CommissionPaymentStatus = "Pending", // ✅ RENAMED
-                    SalePaymentStatus = "Pending",       // ✅ RENAMED
-                    LicenseKey = GenerateLicenseKey(),
-                    Notes = saleDto.Notes,
-                    CreatedAt = DateTime.UtcNow
+                    FullName = dto.BuyerEmail.Split('@')[0],
+                    Email = dto.BuyerEmail.ToLower(),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                    UserRole = 3, // Buyer
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
-
-                var createdSale = await _saleRepository.CreateAsync(sale);
-                Console.WriteLine($"✅ Sale created: ID {createdSale.SaleId}, License: {sale.LicenseKey}");
-
-                return Ok(new 
-                { 
-                    message = "Sale created successfully", 
-                    saleId = createdSale.SaleId,
-                    licenseKey = sale.LicenseKey,
-                    commissionAmount = commissionAmount
-                });
+                await _userRepository.AddAsync(buyer);
             }
-            catch (Exception ex)
+
+            var existingSale = await _saleRepository.GetByBuyerAndProductAsync(buyer.UserID, dto.ProductID);
+            if (existingSale != null)
             {
-                Console.WriteLine($"❌ Create sale error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
+                return BadRequest(new { message = "This buyer has already purchased this product" });
             }
-        }
 
-        [HttpPut("sales/{id}/sale-payment-status")] // ✅ RENAMED ENDPOINT
-        public async Task<IActionResult> UpdateSalePaymentStatus(int id, [FromBody] UpdateSalePaymentStatusDto statusDto) // ✅ RENAMED DTO
-        {
-            try
+            var commissionAmount = (product.Price * product.CommissionPercentage) / 100;
+
+            var sale = new Sale
             {
-                var partnerId = GetCurrentUserId();
-                Console.WriteLine($"📝 Updating sale {id} payment status to {statusDto.SalePaymentStatus}");
+                ProductID = dto.ProductID,
+                PartnerID = partnerId,
+                BuyerID = buyer.UserID,
+                SaleAmount = product.Price,
+                CommissionAmount = commissionAmount,
+                SaleDate = DateTime.UtcNow,
+                CommissionPaymentStatus = "Pending",
+                SalePaymentStatus = "Pending",
+                LicenseKey = GenerateLicenseKey(),
+                Notes = dto.Notes,
+                CreatedAt = DateTime.UtcNow
+            };
 
-                var sale = await _saleRepository.GetByIdAsync(id);
+            await _saleRepository.AddAsync(sale);
 
-                if (sale == null)
-                {
-                    Console.WriteLine($"❌ Sale not found: {id}");
-                    return NotFound(new { message = "Sale not found" });
-                }
-
-                if (sale.PartnerId != partnerId)
-                {
-                    Console.WriteLine($"❌ Partner {partnerId} not authorized for sale {id}");
-                    return Forbid();
-                }
-
-                sale.SalePaymentStatus = statusDto.SalePaymentStatus; // ✅ RENAMED
-                await _saleRepository.UpdateAsync(sale);
-
-                Console.WriteLine($"✅ Sale {id} payment status updated to {statusDto.SalePaymentStatus}");
-                return Ok(new { message = "Sale payment status updated successfully" });
-            }
-            catch (Exception ex)
+            return Ok(new
             {
-                Console.WriteLine($"❌ Update sale payment status error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
+                message = "Sale created successfully!",
+                saleID = sale.SaleID,
+                licenseKey = sale.LicenseKey,
+                commissionAmount = sale.CommissionAmount
+            });
         }
 
         // ========================================
-        // BUYERS
+        // Buyer Management
         // ========================================
-
         [HttpGet("buyers")]
-        public async Task<IActionResult> GetBuyers()
+        public async Task<IActionResult> GetMyBuyers()
         {
-            try
-            {
-                Console.WriteLine($"👤 Getting all buyers");
+            var partnerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-                var buyers = await _context.Users
-                    .Where(u => u.UserRole == "Buyer")
-                    .OrderBy(u => u.FullName)
-                    .Select(u => new
-                    {
-                        userId = u.UserId,
-                        fullName = u.FullName,
-                        email = u.Email,
-                        companyName = u.CompanyName,
-                        phoneNumber = u.PhoneNumber
-                    })
-                    .ToListAsync();
-
-                Console.WriteLine($"✅ Found {buyers.Count} buyers");
-                return Ok(buyers);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Get buyers error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("search-buyers")]
-        public async Task<IActionResult> SearchBuyers([FromQuery] string email)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(email))
+            var buyers = await _context.Sales
+                .Include(s => s.Buyer)
+                .Where(s => s.PartnerID == partnerId)
+                .GroupBy(s => s.BuyerID)
+                .Select(g => new BuyerDto
                 {
-                    return BadRequest(new { message = "Email is required" });
-                }
+                    BuyerID = g.Key,
+                    BuyerName = g.First().Buyer.FullName,
+                    Email = g.First().Buyer.Email,
+                    CompanyName = g.First().Buyer.CompanyName,
+                    PhoneNumber = g.First().Buyer.PhoneNumber,
+                    TotalPurchases = g.Count(),
+                    TotalAmountSpent = g.Sum(s => s.SaleAmount),
+                    LastPurchaseDate = g.Max(s => s.SaleDate)
+                })
+                .OrderByDescending(b => b.TotalAmountSpent)
+                .ToListAsync();
 
-                var buyers = await _context.Users
-                    .Where(u => u.UserRole == "Buyer" && u.Email.Contains(email))
-                    .Take(10)
-                    .Select(u => new
-                    {
-                        userId = u.UserId,
-                        fullName = u.FullName,
-                        email = u.Email,
-                        companyName = u.CompanyName,
-                        phoneNumber = u.PhoneNumber
-                    })
-                    .ToListAsync();
-
-                return Ok(buyers);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Search buyers error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
+            return Ok(buyers);
         }
 
         // ========================================
-        // DASHBOARD
+        // Helper Methods
         // ========================================
-
-        [HttpGet("dashboard")]
-        public async Task<IActionResult> GetDashboard()
-        {
-            try
-            {
-                var partnerId = GetCurrentUserId();
-                Console.WriteLine($"📊 Partner Dashboard - PartnerId: {partnerId}");
-
-                var sales = await _saleRepository.GetByPartnerIdAsync(partnerId);
-                var salesList = sales.ToList();
-
-                var stats = new
-                {
-                    totalSales = salesList.Count,
-                    totalRevenue = salesList.Sum(s => s.SaleAmount),
-                    totalCommission = salesList.Sum(s => s.CommissionAmount),
-                    pendingCommission = salesList
-                        .Where(s => s.CommissionPaymentStatus == "Pending") // ✅ RENAMED
-                        .Sum(s => s.CommissionAmount),
-                    completedCommission = salesList
-                        .Where(s => s.CommissionPaymentStatus == "Completed") // ✅ RENAMED
-                        .Sum(s => s.CommissionAmount)
-                };
-
-                Console.WriteLine($"✅ Dashboard: {stats.totalSales} sales, ₹{stats.totalRevenue} revenue");
-
-                return Ok(stats);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Dashboard error: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        // ========================================
-        // HELPER METHODS
-        // ========================================
-
         private string GenerateLicenseKey()
         {
             var random = new Random();
@@ -355,7 +235,7 @@ namespace SalesERP.API.Controllers
             var part2 = random.Next(1000, 9999);
             var part3 = random.Next(1000, 9999);
             var part4 = random.Next(1000, 9999);
-            return $"{part1}-{part2}-{part3}-{part4}";
+            return $"CLD-{part1}-{part2}-{part3}";
         }
     }
 }

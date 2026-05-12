@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../services/api';
 import { Package, DollarSign, ShoppingCart, TrendingUp, Users } from 'lucide-react';
+import useIsMobile from '../hooks/useIsMobile';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(n || 0);
+const toLocal = (d) => { if (!d) return new Date(NaN); const s = typeof d === 'string' && !d.endsWith('Z') && !d.includes('+') ? d + 'Z' : d; return new Date(s); };
 
 
 function AdminDashboard() {
@@ -12,6 +14,7 @@ function AdminDashboard() {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => { load(); }, []);
 
@@ -31,27 +34,28 @@ function AdminDashboard() {
       const salesData = salesRes.data;
       const partnerMap = {};
       salesData.forEach(s => {
-        if (!partnerMap[s.partnerId]) {
-          partnerMap[s.partnerId] = {
-            partnerId: s.partnerId,
+        if (!partnerMap[s.partnerID]) {
+          partnerMap[s.partnerID] = {
+            partnerID: s.partnerID,
             partnerName: s.partnerName,
             partnerEmail: '',
+            partnerCompany: 'N/A',
             totalSales: 0,
             totalRevenue: 0,
             totalCommission: 0,
           };
         }
-        partnerMap[s.partnerId].totalSales++;
-        partnerMap[s.partnerId].totalRevenue += s.saleAmount;
-        partnerMap[s.partnerId].totalCommission += s.commissionAmount;
+        partnerMap[s.partnerID].totalSales++;
+        partnerMap[s.partnerID].totalRevenue += s.saleAmount;
+        partnerMap[s.partnerID].totalCommission += s.commissionAmount;
       });
 
-      // Merge email from partner list
+      // Merge email/company from partner list (fields: userID, email, companyName)
       const partnerList = partRes.data;
       Object.values(partnerMap).forEach(p => {
-        const found = partnerList.find(pl => pl.partnerId === p.partnerId);
-        p.partnerEmail = found?.partnerEmail || '';
-        p.partnerCompany = found?.partnerCompany || 'N/A';
+        const found = partnerList.find(pl => pl.userID === p.partnerID);
+        p.partnerEmail = found?.email || '';
+        p.partnerCompany = found?.companyName || 'N/A';
       });
 
       setPartners(Object.values(partnerMap).sort((a, b) => b.totalRevenue - a.totalRevenue));
@@ -62,26 +66,14 @@ function AdminDashboard() {
     }
   };
 
-  const handleStatusUpdate = async (saleId, newStatus) => {
+  const handleStatusUpdate = async (saleID, newStatus) => {
     try {
-      setUpdating(saleId);
-      const tabId = sessionStorage.getItem('tabId');
-      const token = sessionStorage.getItem(`token_${tabId}`);
-      const res = await fetch(`http://localhost:5261/api/admin/sales/${saleId}/commission-status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ commissionPaymentStatus: newStatus }),
-      });
-
-      if (!res.ok) throw new Error('Failed to update');
-
-      setSales(prev => prev.map(s => s.saleId === saleId ? { ...s, commissionPaymentStatus: newStatus } : s));
+      setUpdating(saleID);
+      await adminService.updateCommissionStatus(saleID, { commissionPaymentStatus: newStatus });
+      setSales(prev => prev.map(s => s.saleID === saleID ? { ...s, commissionPaymentStatus: newStatus } : s));
     } catch (err) {
       console.error('Update status error:', err);
-      alert(err.message || 'Failed to update status');
+      alert(err.response?.data?.message || 'Failed to update status');
     } finally {
       setUpdating(null);
     }
@@ -98,20 +90,20 @@ function AdminDashboard() {
   ];
 
   return (
-    <div style={{ padding: '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.25rem' }}>Admin Dashboard</h1>
-      <p style={{ color: '#64748b', marginBottom: '2rem' }}>Overview of your business performance</p>
+    <div style={{ padding: isMobile ? '1rem' : '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
+      <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.25rem' }}>Admin Dashboard</h1>
+      <p style={{ color: '#64748b', marginBottom: isMobile ? '1rem' : '2rem' }}>Overview of your business performance</p>
 
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem', marginBottom: isMobile ? '1rem' : '2rem' }}>
         {statCards.map(c => (
-          <div key={c.label} style={{ background: 'white', borderRadius: '12px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <c.icon size={22} color={c.color} />
+          <div key={c.label} style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '0.875rem' : '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '0.5rem' : '1rem' }}>
+            <div style={{ width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: '12px', background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <c.icon size={isMobile ? 18 : 22} color={c.color} />
             </div>
             <div>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '0 0 0.25rem', fontWeight: '500' }}>{c.label}</p>
-              <p style={{ fontSize: c.num ? '1.75rem' : '1.25rem', fontWeight: '700', color: '#1e293b', margin: 0 }}>{c.value}</p>
+              <p style={{ fontSize: isMobile ? '0.7rem' : '0.8rem', color: '#94a3b8', margin: '0 0 0.25rem', fontWeight: '500' }}>{c.label}</p>
+              <p style={{ fontSize: isMobile ? (c.num ? '1.5rem' : '1rem') : (c.num ? '1.75rem' : '1.25rem'), fontWeight: '700', color: '#1e293b', margin: 0 }}>{c.value}</p>
             </div>
           </div>
         ))}
@@ -119,10 +111,10 @@ function AdminDashboard() {
 
       {/* Top Partners */}
       {partners.length > 0 && (
-        <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Top Partners</h2>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '1rem' : '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Top Partners</h2>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '500px' : 'auto' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                   {['Partner Name', 'Company', 'Total Sales', 'Revenue', 'Commission'].map(h => (
@@ -132,7 +124,7 @@ function AdminDashboard() {
               </thead>
               <tbody>
                 {partners.map(p => (
-                  <tr key={p.partnerId} style={{ borderBottom: '1px solid #f8fafc' }}
+                  <tr key={p.partnerID} style={{ borderBottom: '1px solid #f8fafc' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                     onMouseLeave={e => e.currentTarget.style.background = 'white'}>
                     <td style={{ padding: '0.875rem 1rem' }}>
@@ -153,10 +145,10 @@ function AdminDashboard() {
 
       {/* Recent Sales */}
       {sales.length > 0 && (
-        <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Recent Sales</h2>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '1rem' : '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Recent Sales</h2>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isMobile ? '750px' : 'auto' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                   {['Date', 'Product', 'Partner', 'Buyer', 'Amount', 'Commission', 'Commission Status', 'Actions'].map(h => (
@@ -166,11 +158,11 @@ function AdminDashboard() {
               </thead>
               <tbody>
                 {sales.map(s => (
-                  <tr key={s.saleId} style={{ borderBottom: '1px solid #f8fafc' }}
+                  <tr key={s.saleID} style={{ borderBottom: '1px solid #f8fafc' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                     onMouseLeave={e => e.currentTarget.style.background = 'white'}>
                     <td style={{ padding: '0.875rem 1rem', color: '#64748b', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
-                      {new Date(s.saleDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {toLocal(s.saleDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td style={{ padding: '0.875rem 1rem', fontWeight: '600', color: '#1e293b', fontSize: '0.9rem' }}>{s.productName}</td>
                     <td style={{ padding: '0.875rem 1rem', color: '#64748b', fontSize: '0.9rem' }}>{s.partnerName}</td>
@@ -195,17 +187,18 @@ function AdminDashboard() {
                     <td style={{ padding: '0.875rem 1rem' }}>
                       <select
                         value={s.commissionPaymentStatus}
-                        onChange={e => handleStatusUpdate(s.saleId, e.target.value)}
-                        disabled={updating === s.saleId}
+                        onChange={e => handleStatusUpdate(s.saleID, e.target.value)}
+                        disabled={updating === s.saleID}
                         style={{
-                          padding: '0.4rem 0.75rem',
+                          padding: '0.5rem 0.75rem',
                           border: '1px solid #e2e8f0',
                           borderRadius: '6px',
                           fontSize: '0.85rem',
                           color: '#1e293b',
-                          background: updating === s.saleId ? '#f1f5f9' : 'white',
-                          cursor: updating === s.saleId ? 'not-allowed' : 'pointer',
-                          outline: 'none'
+                          background: updating === s.saleID ? '#f1f5f9' : 'white',
+                          cursor: updating === s.saleID ? 'not-allowed' : 'pointer',
+                          outline: 'none',
+                          minHeight: '44px'
                         }}>
                         {['Pending', 'Completed', 'Cancelled'].map(o => <option key={o}>{o}</option>)}
                       </select>
@@ -220,11 +213,11 @@ function AdminDashboard() {
 
       {/* Your Products */}
       {products.length > 0 && (
-        <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Your Products</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '1rem' : '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+          <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Your Products</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
             {products.map(p => (
-              <div key={p.productId} style={{
+              <div key={p.productID} style={{
                 border: '1px solid #e2e8f0',
                 borderRadius: '10px',
                 padding: '1rem',

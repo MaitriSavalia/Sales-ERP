@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find D:/Desktop/Project/SalesERP/Frontend/public -type f -name *.json -o -name favicon* -o -name *.png -o -name *.svg -o -name *.ico)"
+      "Bash(find D:/Desktop/Project/SalesERP/Frontend/public -type f -name *.json -o -name favicon* -o -name *.png -o -name *.svg -o -name *.ico)",
+      "Bash(find /d/Desktop/Project/SalesERP -name *docker* -o -name *compose* -o -name *.yml -o -name *.yaml)",
+      "Bash(npx react-scripts:*)"
     ]
   }
 }

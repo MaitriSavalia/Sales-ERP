@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../services/api';
 import { Users, UserPlus, Trash2, Mail, Building2, Phone, Calendar } from 'lucide-react';
+import useIsMobile from '../hooks/useIsMobile';
 
 function AdminPartners() {
-  const [partners, setPartners]     = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState('');
+  const [partners, setPartners]       = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState('');
   const [searchEmail, setSearchEmail] = useState('');
-  const [adding, setAdding]         = useState(false);
+  const [adding, setAdding]           = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => { loadPartners(); }, []);
 
@@ -31,7 +33,7 @@ function AdminPartners() {
       setAdding(true);
       setError('');
       const r = await adminService.addPartner({ partnerEmail: searchEmail });
-      alert(`✅ ${r.data.message}\nPartner: ${r.data.partnerName}`);
+      alert(`${r.data.message}\nPartner: ${r.data.partnerName}`);
       setSearchEmail('');
       loadPartners();
     } catch (err) {
@@ -51,9 +53,13 @@ function AdminPartners() {
     }
   };
 
-  const formatDate = (d) => new Date(d).toLocaleDateString('en-IN', {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-  });
+  const formatDate = (d) => {
+    if (!d) return '–';
+    const s = typeof d === 'string' && !d.endsWith('Z') && !d.includes('+') ? d + 'Z' : d;
+    const date = new Date(s);
+    if (isNaN(date.getTime()) || date.getFullYear() < 2000) return '–';
+    return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', color: '#64748b' }}>
@@ -62,12 +68,11 @@ function AdminPartners() {
   );
 
   return (
-    <div style={{ padding: '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
+    <div style={{ padding: isMobile ? '1rem' : '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
 
-      {/* Page Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Users size={28} /> My Partners
+      <div style={{ marginBottom: isMobile ? '1rem' : '2rem' }}>
+        <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Users size={isMobile ? 24 : 28} /> My Partners
         </h1>
         <p style={{ color: '#64748b' }}>Manage partners who can sell your products</p>
       </div>
@@ -79,7 +84,7 @@ function AdminPartners() {
       )}
 
       {/* Add Partner Card */}
-      <div style={{ background: 'white', borderRadius: '12px', padding: '1.75rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.75rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1e293b', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <UserPlus size={20} /> Add New Partner
         </h2>
@@ -89,8 +94,7 @@ function AdminPartners() {
             Partner Email Address
           </label>
 
-          {/* Input + Button row */}
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: isMobile ? 'stretch' : 'flex-start', flexDirection: isMobile ? 'column' : 'row' }}>
             <div style={{ flex: 1, position: 'relative' }}>
               <Mail size={18} color="#94a3b8" style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
               <input
@@ -107,7 +111,8 @@ function AdminPartners() {
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
-                  transition: 'border-color 0.2s'
+                  transition: 'border-color 0.2s',
+                  minHeight: '44px'
                 }}
                 onFocus={e => e.target.style.borderColor = '#f97316'}
                 onBlur={e => e.target.style.borderColor = '#e2e8f0'}
@@ -128,10 +133,12 @@ function AdminPartners() {
                 cursor: adding ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.5rem',
                 whiteSpace: 'nowrap',
                 boxShadow: adding ? 'none' : '0 4px 12px rgba(249,115,22,0.3)',
-                flexShrink: 0
+                flexShrink: 0,
+                minHeight: '44px'
               }}
             >
               <UserPlus size={18} />
@@ -146,13 +153,13 @@ function AdminPartners() {
       </div>
 
       {/* Partner Network */}
-      <div style={{ background: 'white', borderRadius: '12px', padding: '1.75rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '1.25rem' : '1.75rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1e293b', marginBottom: '1.25rem' }}>
           Partner Network ({partners.length})
         </h2>
 
         {partners.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem 2rem', color: '#94a3b8' }}>
+          <div style={{ textAlign: 'center', padding: isMobile ? '2rem 1rem' : '3rem 2rem', color: '#94a3b8' }}>
             <Users size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
             <p style={{ fontSize: '1rem', fontWeight: '600', color: '#64748b', marginBottom: '0.25rem' }}>No partners yet</p>
             <p style={{ fontSize: '0.875rem' }}>Add partners using the form above</p>
@@ -161,48 +168,49 @@ function AdminPartners() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
             {partners.map((p) => (
               <div
-                key={p.partnerId}
+                key={p.userID}
                 style={{
                   border: '1px solid #e2e8f0',
                   borderRadius: '10px',
-                  padding: '1.25rem 1.5rem',
+                  padding: isMobile ? '1rem' : '1.25rem 1.5rem',
                   display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
+                  alignItems: isMobile ? 'stretch' : 'center',
                   gap: '1rem',
                   transition: 'border-color 0.2s, box-shadow 0.2s'
                 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(249,115,22,0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; }}
               >
-                {/* Left: Partner Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.5rem' }}>
-                    {p.partnerName}
+                    {p.fullName}
                   </h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? '0.5rem' : '1rem' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.875rem' }}>
-                      <Mail size={14} /> {p.partnerEmail}
+                      <Mail size={14} /> {p.email}
                     </span>
-                    {p.partnerCompany && (
+                    {p.companyName && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.875rem' }}>
-                        <Building2 size={14} /> {p.partnerCompany}
+                        <Building2 size={14} /> {p.companyName}
                       </span>
                     )}
-                    {p.partnerPhone && (
+                    {p.phoneNumber && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.875rem' }}>
-                        <Phone size={14} /> {p.partnerPhone}
+                        <Phone size={14} /> {p.phoneNumber}
                       </span>
                     )}
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.8rem' }}>
-                      <Calendar size={13} /> Added {formatDate(p.mappedAt)}
-                    </span>
+                    {formatDate(p.addedAt) !== '–' && (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.8rem' }}>
+                        <Calendar size={13} /> Added {formatDate(p.addedAt)}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Right: Remove Button */}
                 <button
-                  onClick={() => handleRemove(p.partnerId, p.partnerName)}
+                  onClick={() => handleRemove(p.userID, p.fullName)}
                   style={{
                     padding: '0.5rem 1rem',
                     background: '#fef2f2',
@@ -214,9 +222,11 @@ function AdminPartners() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '0.4rem',
                     flexShrink: 0,
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    minHeight: '44px'
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#dc2626'; e.currentTarget.style.color = 'white'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#dc2626'; }}

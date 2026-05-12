@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SalesERP.Data;
-using SalesERP.Data.Repositories;
+using SalesERP.Repositories;
 using SalesERP.Services;
 using SalesERP.Models;
 
@@ -26,7 +26,7 @@ builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 
 
 // Register Services
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<AuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];

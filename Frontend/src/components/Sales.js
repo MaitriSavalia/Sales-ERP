@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-
+import { adminService } from '../services/api';
+import useIsMobile from '../hooks/useIsMobile';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
-const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const toLocal = (d) => { if (!d) return new Date(NaN); const s = typeof d === 'string' && !d.endsWith('Z') && !d.includes('+') ? d + 'Z' : d; return new Date(s); };
+const fmtDate = (d) => toLocal(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 function Sales() {
   const [sales, setSales] = useState([]);
@@ -11,63 +13,43 @@ function Sales() {
   const tabId = sessionStorage.getItem('tabId');
   const storedUser = sessionStorage.getItem(`user_${tabId}`);
   const userRole = storedUser ? JSON.parse(storedUser).userRole : null;
+  const isMobile = useIsMobile();
 
   useEffect(() => { fetchSales(); }, []);
 
   const fetchSales = async () => {
     try {
-      const token = sessionStorage.getItem(`token_${sessionStorage.getItem('tabId')}`);
-      const endpoint = userRole === 'Admin'
-        ? 'http://localhost:5261/api/admin/sales'
-        : 'http://localhost:5261/api/partner/sales';
-      const response = await fetch(endpoint, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      const mappedData = data.map(sale => ({
+      const res = userRole === 'Admin'
+        ? await adminService.getSales()
+        : await import('../services/api').then(m => m.partnerService.getSales());
+      const data = res.data.map(sale => ({
         ...sale,
-        salePaymentStatus: sale.salePaymentStatus || sale.buyerPaymentStatus || 'Pending',
-        commissionPaymentStatus: sale.commissionPaymentStatus || sale.paymentStatus || 'Pending'
+        salePaymentStatus: sale.salePaymentStatus || 'Pending',
+        commissionPaymentStatus: sale.commissionPaymentStatus || 'Pending'
       }));
-      setSales(mappedData);
+      setSales(data);
       setLoading(false);
     } catch (error) {
-      setError(`Failed to load sales: ${error.message}`);
+      setError(`Failed to load sales: ${error.response?.data?.message || error.message}`);
       setLoading(false);
     }
   };
 
-  const updateCommissionPaymentStatus = async (saleId, newStatus) => {
+  const updateCommissionPaymentStatus = async (saleID, newStatus) => {
     try {
-      const token = sessionStorage.getItem(`token_${sessionStorage.getItem('tabId')}`);
-      const response = await fetch(`http://localhost:5261/api/admin/sales/${saleId}/commission-status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ commissionPaymentStatus: newStatus })
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      fetchSales();
+      await adminService.updateCommissionStatus(saleID, { commissionPaymentStatus: newStatus });
+      setSales(prev => prev.map(s => s.saleID === saleID ? { ...s, commissionPaymentStatus: newStatus } : s));
     } catch (error) {
-      alert(`Failed to update: ${error.message}`);
+      alert(`Failed to update: ${error.response?.data?.message || error.message}`);
     }
   };
 
-  const updateSalePaymentStatus = async (saleId, newStatus) => {
+  const updateSalePaymentStatus = async (saleID, newStatus) => {
     try {
-      const token = sessionStorage.getItem(`token_${sessionStorage.getItem('tabId')}`);
-      const endpoint = userRole === 'Admin'
-        ? `http://localhost:5261/api/admin/sales/${saleId}/sale-payment-status`
-        : `http://localhost:5261/api/partner/sales/${saleId}/sale-payment-status`;
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ salePaymentStatus: newStatus })
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      fetchSales();
+      await adminService.updateSaleStatus(saleID, { salePaymentStatus: newStatus });
+      setSales(prev => prev.map(s => s.saleID === saleID ? { ...s, salePaymentStatus: newStatus } : s));
     } catch (error) {
-      alert(`Failed to update: ${error.message}`);
+      alert(`Failed to update: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -95,9 +77,9 @@ function Sales() {
   );
 
   return (
-    <div style={{ padding: '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.5rem' }}>Sales Management</h1>
-      <p style={{ color: '#64748b', marginBottom: '2rem' }}>Track and manage all sales transactions</p>
+    <div style={{ padding: isMobile ? '1rem' : '2rem', background: '#f1f5f9', minHeight: '100vh' }}>
+      <h1 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.5rem' }}>Sales Management</h1>
+      <p style={{ color: '#64748b', marginBottom: isMobile ? '1rem' : '2rem' }}>Track and manage all sales transactions</p>
 
       {error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
@@ -106,16 +88,16 @@ function Sales() {
       )}
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? '0.75rem' : '1.25rem', marginBottom: isMobile ? '1rem' : '2rem' }}>
         {[
           { label: 'TOTAL SALES', value: sales.length, big: true },
           { label: 'TOTAL REVENUE', value: fmt(totalRevenue), color: '#2563eb' },
           { label: 'TOTAL COMMISSION', value: fmt(totalCommission), color: '#d97706' },
           { label: 'PAID COMMISSION', value: fmt(paidCommission), color: '#16a34a' },
         ].map(c => (
-          <div key={c.label} style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>{c.label}</p>
-            <p style={{ fontSize: c.big ? '2rem' : '1.5rem', fontWeight: '700', color: c.color || '#1e293b', margin: 0 }}>{c.value}</p>
+          <div key={c.label} style={{ background: 'white', borderRadius: '12px', padding: isMobile ? '0.875rem' : '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+            <p style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>{c.label}</p>
+            <p style={{ fontSize: isMobile ? (c.big ? '1.5rem' : '1.1rem') : (c.big ? '2rem' : '1.5rem'), fontWeight: '700', color: c.color || '#1e293b', margin: 0 }}>{c.value}</p>
           </div>
         ))}
       </div>
@@ -123,14 +105,14 @@ function Sales() {
       {/* Table */}
       <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', overflow: 'hidden' }}>
         {sales.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#94a3b8' }}>
+          <div style={{ textAlign: 'center', padding: isMobile ? '2rem 1rem' : '4rem 2rem', color: '#94a3b8' }}>
             <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>No Sales Yet</p>
             <p style={{ fontSize: '0.9rem' }}>Sales records will appear here.</p>
           </div>
         ) : (
           <>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', minWidth: '1000px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                     {['SALE ID', 'PRODUCT', 'PARTNER', 'BUYER', 'BUYER EMAIL', 'AMOUNT', 'COMMISSION', 'SALE DATE', 'SALE PAYMENT', 'COMMISSION PAYMENT', 'LICENSE KEY'].map(h => (
@@ -140,10 +122,10 @@ function Sales() {
                 </thead>
                 <tbody>
                   {sales.map(sale => (
-                    <tr key={sale.saleId} style={{ borderBottom: '1px solid #f1f5f9' }}
+                    <tr key={sale.saleID} style={{ borderBottom: '1px solid #f1f5f9' }}
                       onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                       onMouseLeave={e => e.currentTarget.style.background = 'white'}>
-                      <td style={{ padding: '1rem', fontWeight: '600', color: '#1e293b' }}>#{sale.saleId}</td>
+                      <td style={{ padding: '1rem', fontWeight: '600', color: '#1e293b' }}>#{sale.saleID}</td>
                       <td style={{ padding: '1rem', fontWeight: '600', color: '#1e293b' }}>{sale.productName}</td>
                       <td style={{ padding: '1rem', color: '#475569' }}>{sale.partnerName}</td>
                       <td style={{ padding: '1rem' }}>
@@ -158,15 +140,16 @@ function Sales() {
                         {userRole === 'Admin' ? (
                           <select
                             value={sale.salePaymentStatus}
-                            onChange={(e) => updateSalePaymentStatus(sale.saleId, e.target.value)}
+                            onChange={(e) => updateSalePaymentStatus(sale.saleID, e.target.value)}
                             style={{
-                              padding: '0.35rem 0.6rem',
+                              padding: '0.5rem 0.75rem',
                               borderRadius: '8px',
                               border: '1px solid #e2e8f0',
                               fontSize: '0.82rem',
                               fontWeight: '600',
                               cursor: 'pointer',
                               outline: 'none',
+                              minHeight: '44px',
                               ...statusStyle(sale.salePaymentStatus)
                             }}
                           >
@@ -184,15 +167,16 @@ function Sales() {
                         {userRole === 'Admin' ? (
                           <select
                             value={sale.commissionPaymentStatus}
-                            onChange={(e) => updateCommissionPaymentStatus(sale.saleId, e.target.value)}
+                            onChange={(e) => updateCommissionPaymentStatus(sale.saleID, e.target.value)}
                             style={{
-                              padding: '0.35rem 0.6rem',
+                              padding: '0.5rem 0.75rem',
                               borderRadius: '8px',
                               border: '1px solid #e2e8f0',
                               fontSize: '0.82rem',
                               fontWeight: '600',
                               cursor: 'pointer',
                               outline: 'none',
+                              minHeight: '44px',
                               ...statusStyle(sale.commissionPaymentStatus)
                             }}
                           >

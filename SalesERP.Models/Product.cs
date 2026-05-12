@@ -6,12 +6,13 @@ namespace SalesERP.Models
     public class Product
     {
         [Key]
-        public int ProductId { get; set; }
+        public int ProductID { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(100)]
         public string ProductName { get; set; } = string.Empty;
 
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]
@@ -19,23 +20,21 @@ namespace SalesERP.Models
         public decimal Price { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(5,2)")]
         public decimal CommissionPercentage { get; set; }
 
         [Required]
-        public int AdminId { get; set; }
+        public int AdminID { get; set; }
 
         [Required]
         public bool IsActive { get; set; } = true;
 
-        [Required]
-        public DateTime CreatedAt { get; set; }
-
-        [Required]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
         // Navigation property
-        [ForeignKey("AdminId")]
-        public virtual User? Admin { get; set; }
+        [ForeignKey("AdminID")]
+        public User? Admin { get; set; }
+
+        public ICollection<Sale>? Sales { get; set; }
     }
 }

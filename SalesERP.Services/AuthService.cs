@@ -3,19 +3,14 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SalesERP.Data;
 using SalesERP.Models;
 using SalesERP.Models.DTOs;
-using SalesERP.Data.Repositories;
+using SalesERP.Repositories;
 
 namespace SalesERP.Services
 {
-    public interface IAuthService
-    {
-        Task<AuthResponseDto?> LoginAsync(LoginDto loginDto);
-        Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto);
-    }
-
-    public class AuthService : IAuthService
+    public class AuthService
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
@@ -26,127 +21,103 @@ namespace SalesERP.Services
             _configuration = configuration;
         }
 
-        public async Task<AuthResponseDto?> LoginAsync(LoginDto loginDto)
+        public async Task<User> RegisterAsync(RegisterDto dto)
         {
-            try
+            var existingUser = await _userRepository.GetByEmailAsync(dto.Email.ToLower());
+            if (existingUser != null)
             {
-                Console.WriteLine($"🔐 Login attempt: {loginDto.Email}");
-
-                var user = await _userRepository.GetByEmailAsync(loginDto.Email);
-                
-                if (user == null)
-                {
-                    Console.WriteLine($"❌ User not found: {loginDto.Email}");
-                    return null;
-                }
-
-                // Verify password
-                if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
-                {
-                    Console.WriteLine($"❌ Invalid password for: {loginDto.Email}");
-                    return null;
-                }
-
-                var token = GenerateJwtToken(user);
-                
-                Console.WriteLine($"✅ Login successful: {user.Email} (Role: {user.UserRole})");
-
-                return new AuthResponseDto
-                {
-                    UserId = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    UserRole = user.UserRole,
-                    Token = token,
-                    CompanyName = user.CompanyName
-                };
+                throw new InvalidOperationException("User already exists");
             }
-            catch (Exception ex)
+
+            // For partners, verify AdminCode exists
+            if (dto.UserRole == 2 && !string.IsNullOrEmpty(dto.AdminCode))
             {
-                Console.WriteLine($"❌ Login error: {ex.Message}");
-                return null;
+                var admin = await _userRepository.GetByAdminCodeAsync(dto.AdminCode);
+                if (admin == null)
+                {
+                    throw new InvalidOperationException("Invalid admin code");
+                }
             }
+
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email.ToLower(),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                UserRole = dto.UserRole,
+                CompanyName = dto.CompanyName,
+                PhoneNumber = dto.PhoneNumber,
+                Address = dto.Address,
+                AdminCode = dto.UserRole == 1 ? GenerateAdminCode() : dto.AdminCode,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _userRepository.AddAsync(user);
+            return user;
         }
 
-        public async Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto)
+        public async Task<LoginResponseDto> LoginAsync(LoginDto dto)
         {
-            try
+            var user = await _userRepository.GetByEmailAsync(dto.Email.ToLower());
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             {
-                Console.WriteLine($"📝 Registration attempt: {registerDto.Email}");
-
-                var existingUser = await _userRepository.GetByEmailAsync(registerDto.Email);
-                if (existingUser != null)
-                {
-                    Console.WriteLine($"❌ User already exists: {registerDto.Email}");
-                    return null;
-                }
-
-                var user = new User
-                {
-                    FullName = registerDto.FullName,
-                    Email = registerDto.Email,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                    UserRole = registerDto.UserRole,
-                    PhoneNumber = registerDto.PhoneNumber,
-                    CompanyName = registerDto.CompanyName,
-                    Address = registerDto.Address,
-                    AdminCode = registerDto.UserRole.ToLower() == "admin" ? GenerateAdminCode() : null,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var createdUser = await _userRepository.CreateAsync(user);
-                
-                var token = GenerateJwtToken(createdUser);
-                
-                Console.WriteLine($"✅ Registration successful: {createdUser.Email} (Role: {createdUser.UserRole})");
-
-                return new AuthResponseDto
-                {
-                    UserId = createdUser.UserId,
-                    FullName = createdUser.FullName,
-                    Email = createdUser.Email,
-                    UserRole = createdUser.UserRole,
-                    Token = token,
-                    CompanyName = createdUser.CompanyName
-                };
+                throw new UnauthorizedAccessException("Invalid credentials");
             }
-            catch (Exception ex)
+
+            var token = GenerateJwtToken(user);
+
+            return new LoginResponseDto
             {
-                Console.WriteLine($"❌ Registration error: {ex.Message}");
-                throw;
-            }
+                Token = token,
+                UserID = user.UserID,
+                FullName = user.FullName,
+                Email = user.Email,
+                UserRole = user.UserRole,
+                AdminCode = user.AdminCode
+            };
         }
 
         private string GenerateJwtToken(User user)
         {
-            var jwtSettings = _configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
-            
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var claims = new List<Claim>
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, user.UserRole),
-                    new Claim("FullName", user.FullName)
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                Issuer = jwtSettings["Issuer"],
-                Audience = jwtSettings["Audience"],
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, GetRoleName(user.UserRole)),
+                new Claim("AdminCode", user.AdminCode ?? "")
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured")));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(7),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GetRoleName(int userRole)
+        {
+            return userRole switch
+            {
+                1 => "Admin",
+                2 => "Partner",
+                3 => "Buyer",
+                _ => "Unknown"
+            };
         }
 
         private string GenerateAdminCode()
         {
-            return new Random().Next(100000, 999999).ToString();
+            var random = new Random();
+            return random.Next(100000, 999999).ToString();
         }
     }
 }

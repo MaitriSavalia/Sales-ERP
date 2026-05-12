@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/api';
 import { Mail, Lock, User, Phone, Building2, MapPin, UserCog, AlertCircle, UserPlus } from 'lucide-react';
+import useIsMobile from '../hooks/useIsMobile';
 
 function Register() {
   const navigate = useNavigate();
@@ -10,13 +11,15 @@ function Register() {
     email: '',
     password: '',
     confirmPassword: '',
-    userRole: 'Partner',
+    userRole: 2,
     phoneNumber: '',
     companyName: '',
     address: '',
+    adminCode: ''
   });
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,6 +61,7 @@ function Register() {
     transition: 'border-color 0.2s ease',
     boxSizing: 'border-box',
     fontFamily: 'inherit',
+    background: 'white',
   };
 
   const labelStyle = {
@@ -78,12 +82,12 @@ function Register() {
   };
 
   const fields = [
-    { label: 'Full Name *',       name: 'fullName',        type: 'text',     placeholder: 'Enter your full name',        icon: User,      required: true },
-    { label: 'Email *',           name: 'email',           type: 'email',    placeholder: 'Enter your email',            icon: Mail,      required: true },
-    { label: 'Password *',        name: 'password',        type: 'password', placeholder: 'Enter your password (min 6)', icon: Lock,      required: true },
-    { label: 'Confirm Password *',name: 'confirmPassword', type: 'password', placeholder: 'Confirm your password',       icon: Lock,      required: true },
-    { label: 'Company Name',      name: 'companyName',     type: 'text',     placeholder: 'Enter your company name',     icon: Building2, required: false },
-    { label: 'Phone Number',      name: 'phoneNumber',     type: 'tel',      placeholder: 'Enter your phone number',     icon: Phone,     required: false },
+    { label: 'Full Name *', name: 'fullName', type: 'text', placeholder: 'Enter your full name', icon: User, required: true },
+    { label: 'Email *', name: 'email', type: 'email', placeholder: 'Enter your email', icon: Mail, required: true },
+    { label: 'Password *', name: 'password', type: 'password', placeholder: 'Enter your password (min 6)', icon: Lock, required: true },
+    { label: 'Confirm Password *', name: 'confirmPassword', type: 'password', placeholder: 'Confirm your password', icon: Lock, required: true },
+    { label: 'Company Name', name: 'companyName', type: 'text', placeholder: 'Enter your company name', icon: Building2, required: false },
+    { label: 'Phone Number', name: 'phoneNumber', type: 'tel', placeholder: 'Enter your phone number', icon: Phone, required: false },
   ];
 
   return (
@@ -93,24 +97,20 @@ function Register() {
       alignItems: 'center',
       justifyContent: 'center',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem',
+      padding: isMobile ? '1rem' : '2rem',
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '24px',
-        padding: '3rem',
+        borderRadius: isMobile ? '16px' : '24px',
+        padding: isMobile ? '1.5rem' : '3rem',
         width: '100%',
         maxWidth: '500px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
       }}>
-        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <img src="/logo.svg" alt="SalesPilot" style={{
-            width: '80px',
-            height: '80px',
-            margin: '0 auto 1.5rem',
-            display: 'block',
-            borderRadius: '20px',
+            width: '80px', height: '80px',
+            margin: '0 auto 1.5rem', display: 'block', borderRadius: '20px',
           }} />
           <h1 style={{ fontSize: '2rem', fontWeight: '700', color: '#1e293b', marginBottom: '0.5rem' }}>
             SalesPilot
@@ -118,7 +118,6 @@ function Register() {
           <p style={{ color: '#64748b', fontSize: '1rem' }}>Create your account</p>
         </div>
 
-        {/* Error */}
         {error && (
           <div style={{
             background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px',
@@ -131,7 +130,6 @@ function Register() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Text / email / password fields */}
           {fields.map(f => (
             <div key={f.name} style={{ marginBottom: '1.25rem' }}>
               <label style={labelStyle}>{f.label}</label>
@@ -161,21 +159,15 @@ function Register() {
               <select
                 name="userRole"
                 value={formData.userRole}
-                onChange={handleChange}
-                required
+                onChange={(e) => setFormData({ ...formData, userRole: parseInt(e.target.value) })}
                 disabled={loading}
-                style={{
-                  ...inputStyle,
-                  appearance: 'none',
-                  cursor: 'pointer',
-                  background: 'white',
-                }}
+                style={inputStyle}
                 onFocus={e => e.target.style.borderColor = '#3b82f6'}
                 onBlur={e => e.target.style.borderColor = '#e5e7eb'}
               >
-                <option value="Admin">Admin</option>
-                <option value="Partner">Partner</option>
-                
+                <option value={1}>Admin</option>
+                <option value={2}>Partner</option>
+                <option value={3}>Buyer</option>
               </select>
             </div>
           </div>
@@ -204,7 +196,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -233,7 +224,6 @@ function Register() {
           </button>
         </form>
 
-        {/* Footer */}
         <div style={{ marginTop: '1.5rem', textAlign: 'center', color: '#64748b', fontSize: '0.875rem' }}>
           Already have an account?{' '}
           <Link to="/login" style={{ color: '#3b82f6', fontWeight: '600', textDecoration: 'none' }}>

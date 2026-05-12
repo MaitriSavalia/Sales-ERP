@@ -44,7 +44,7 @@ function Products() {
       };
 
       if (editingProduct) {
-        await adminService.updateProduct(editingProduct.productId, productData);
+        await adminService.updateProduct(editingProduct.productID, productData);
       } else {
         await adminService.createProduct(productData);
       }
@@ -155,7 +155,7 @@ function Products() {
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.productId}>
+                <tr key={product.productID}>
                   <td className="product-name">{product.productName}</td>
                   <td className="product-description">{product.description}</td>
                   <td className="amount">{formatCurrency(product.price)}</td>
@@ -177,7 +177,7 @@ function Products() {
                       </button>
                       <button
                         className="btn-icon btn-delete"
-                        onClick={() => handleDelete(product.productId)}
+                        onClick={() => handleDelete(product.productID)}
                         title="Delete"
                       >
                         <Trash2 size={16} />

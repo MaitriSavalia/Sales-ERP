@@ -1,23 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SalesERP.Data;
 using SalesERP.Models;
 
-namespace SalesERP.Data.Repositories
+namespace SalesERP.Repositories
 {
-    // ==========================================
-    // USER REPOSITORY
-    // ==========================================
-
+    // ========================================
+    // User Repository Interface
+    // ========================================
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllAsync();
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByEmailAsync(string email);
-        Task<User?> GetByAdminCodeAsync(string adminCode); // ✅ ADDED
-        Task<User> CreateAsync(User user);
+        Task<User?> GetByAdminCodeAsync(string adminCode);
+        Task<List<User>> GetAllAsync();
+        Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(int id);
     }
 
+    // ========================================
+    // User Repository Implementation
+    // ========================================
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
@@ -27,37 +30,35 @@ namespace SalesERP.Data.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            return await _context.Users.ToListAsync();
-        }
-
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserID == id);
         }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email.ToLower());
         }
 
-        // ✅ ADDED: Get user by AdminCode
         public async Task<User?> GetByAdminCodeAsync(string adminCode)
         {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.AdminCode == adminCode && u.UserRole == "Admin");
+            return await _context.Users.FirstOrDefaultAsync(u => u.AdminCode == adminCode && u.UserRole == 1);
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<List<User>> GetAllAsync()
         {
-            _context.Users.Add(user);
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            return user;
         }
 
         public async Task UpdateAsync(User user)
         {
+            user.UpdatedAt = DateTime.UtcNow;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
@@ -73,20 +74,22 @@ namespace SalesERP.Data.Repositories
         }
     }
 
-    // ==========================================
-    // PRODUCT REPOSITORY
-    // ==========================================
-
+    // ========================================
+    // Product Repository Interface
+    // ========================================
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllAsync();
         Task<Product?> GetByIdAsync(int id);
-        Task<IEnumerable<Product>> GetByAdminIdAsync(int adminId);
-        Task<Product> CreateAsync(Product product);
+        Task<List<Product>> GetAllAsync();
+        Task<List<Product>> GetByAdminIdAsync(int adminId);
+        Task AddAsync(Product product);
         Task UpdateAsync(Product product);
         Task DeleteAsync(int id);
     }
 
+    // ========================================
+    // Product Repository Implementation
+    // ========================================
     public class ProductRepository : IProductRepository
     {
         private readonly ApplicationDbContext _context;
@@ -96,41 +99,38 @@ namespace SalesERP.Data.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
-        {
-            return await _context.Products
-                .Include(p => p.Admin)
-                .ToListAsync();
-        }
-
         public async Task<Product?> GetByIdAsync(int id)
         {
             return await _context.Products
                 .Include(p => p.Admin)
-                .FirstOrDefaultAsync(p => p.ProductId == id);
+                .FirstOrDefaultAsync(p => p.ProductID == id);
         }
 
-        public async Task<IEnumerable<Product>> GetByAdminIdAsync(int adminId)
+        public async Task<List<Product>> GetAllAsync()
         {
             return await _context.Products
                 .Include(p => p.Admin)
-                .Where(p => p.AdminId == adminId)
+                .Where(p => p.IsActive)
                 .ToListAsync();
         }
 
-        public async Task<Product> CreateAsync(Product product)
+        public async Task<List<Product>> GetByAdminIdAsync(int adminId)
         {
-            _context.Products.Add(product);
+            return await _context.Products
+                .Include(p => p.Admin)
+                .Where(p => p.AdminID == adminId && p.IsActive)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(Product product)
+        {
+            await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
-            
-            // Reload to get navigation properties
-            await _context.Entry(product).Reference(p => p.Admin).LoadAsync();
-            
-            return product;
         }
 
         public async Task UpdateAsync(Product product)
         {
+            product.UpdatedAt = DateTime.UtcNow;
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
         }
@@ -140,28 +140,30 @@ namespace SalesERP.Data.Repositories
             var product = await GetByIdAsync(id);
             if (product != null)
             {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                product.IsActive = false;
+                await UpdateAsync(product);
             }
         }
     }
 
-    // ==========================================
-    // SALE REPOSITORY
-    // ==========================================
-
+    // ========================================
+    // Sale Repository Interface
+    // ========================================
     public interface ISaleRepository
     {
-        Task<IEnumerable<Sale>> GetAllAsync();
         Task<Sale?> GetByIdAsync(int id);
-        Task<IEnumerable<Sale>> GetByProductIdAsync(int productId);
-        Task<IEnumerable<Sale>> GetByPartnerIdAsync(int partnerId);
-        Task<IEnumerable<Sale>> GetByBuyerIdAsync(int buyerId);
-        Task<Sale> CreateAsync(Sale sale);
+        Task<List<Sale>> GetAllAsync();
+        Task<List<Sale>> GetByPartnerIdAsync(int partnerId);
+        Task<List<Sale>> GetByAdminIdAsync(int adminId);
+        Task<Sale?> GetByBuyerAndProductAsync(int buyerId, int productId);
+        Task AddAsync(Sale sale);
         Task UpdateAsync(Sale sale);
         Task DeleteAsync(int id);
     }
 
+    // ========================================
+    // Sale Repository Implementation
+    // ========================================
     public class SaleRepository : ISaleRepository
     {
         private readonly ApplicationDbContext _context;
@@ -171,69 +173,59 @@ namespace SalesERP.Data.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Sale>> GetAllAsync()
-        {
-            return await _context.Sales
-                .Include(s => s.Product)
-                .Include(s => s.Partner)
-                .Include(s => s.Buyer)
-                .ToListAsync();
-        }
-
         public async Task<Sale?> GetByIdAsync(int id)
         {
             return await _context.Sales
                 .Include(s => s.Product)
                 .Include(s => s.Partner)
                 .Include(s => s.Buyer)
-                .FirstOrDefaultAsync(s => s.SaleId == id);
+                .FirstOrDefaultAsync(s => s.SaleID == id);
         }
 
-        public async Task<IEnumerable<Sale>> GetByProductIdAsync(int productId)
+        public async Task<List<Sale>> GetAllAsync()
         {
             return await _context.Sales
                 .Include(s => s.Product)
                 .Include(s => s.Partner)
                 .Include(s => s.Buyer)
-                .Where(s => s.ProductId == productId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Sale>> GetByPartnerIdAsync(int partnerId)
+        public async Task<List<Sale>> GetByPartnerIdAsync(int partnerId)
         {
             return await _context.Sales
                 .Include(s => s.Product)
                 .Include(s => s.Partner)
                 .Include(s => s.Buyer)
-                .Where(s => s.PartnerId == partnerId)
+                .Where(s => s.PartnerID == partnerId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Sale>> GetByBuyerIdAsync(int buyerId)
+        public async Task<List<Sale>> GetByAdminIdAsync(int adminId)
         {
             return await _context.Sales
                 .Include(s => s.Product)
                 .Include(s => s.Partner)
                 .Include(s => s.Buyer)
-                .Where(s => s.BuyerId == buyerId)
+                .Where(s => s.Product.AdminID == adminId)
                 .ToListAsync();
         }
 
-        public async Task<Sale> CreateAsync(Sale sale)
+        public async Task<Sale?> GetByBuyerAndProductAsync(int buyerId, int productId)
         {
-            _context.Sales.Add(sale);
+            return await _context.Sales
+                .FirstOrDefaultAsync(s => s.BuyerID == buyerId && s.ProductID == productId);
+        }
+
+        public async Task AddAsync(Sale sale)
+        {
+            await _context.Sales.AddAsync(sale);
             await _context.SaveChangesAsync();
-            
-            // Reload to get navigation properties
-            await _context.Entry(sale).Reference(s => s.Product).LoadAsync();
-            await _context.Entry(sale).Reference(s => s.Partner).LoadAsync();
-            await _context.Entry(sale).Reference(s => s.Buyer).LoadAsync();
-            
-            return sale;
         }
 
         public async Task UpdateAsync(Sale sale)
         {
+            sale.UpdatedAt = DateTime.UtcNow;
             _context.Sales.Update(sale);
             await _context.SaveChangesAsync();
         }

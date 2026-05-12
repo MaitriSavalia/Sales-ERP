@@ -1,48 +1,49 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SalesERP.Models
 {
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public int UserID { get; set; }
 
         [Required]
         [MaxLength(100)]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(100)]
         [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(50)]
-        public string UserRole { get; set; } = string.Empty;
-
-        [MaxLength(20)]
-        public string? PhoneNumber { get; set; }
+        public int UserRole { get; set; } // 1=Admin, 2=Partner, 3=Buyer
 
         [MaxLength(100)]
         public string? CompanyName { get; set; }
 
-        [MaxLength(500)]
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
+
+        [MaxLength(255)]
         public string? Address { get; set; }
 
-        // Admin Unique Code (for partners to join)
-        [MaxLength(20)]
+        [MaxLength(10)]
         public string? AdminCode { get; set; }
 
-        public string? AdminIds { get; set; }
+        public string? AdminIDs { get; set; } // VARCHAR(MAX)
 
-        [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
 
-        [Required]
-        public DateTime UpdatedAt { get; set; }
+        // Navigation properties
+        public ICollection<Product>? Products { get; set; }
+        public ICollection<Sale>? PartnerSales { get; set; }
+        public ICollection<Sale>? BuyerSales { get; set; }
     }
 }

@@ -1,42 +1,47 @@
 ﻿namespace SalesERP.Models.DTOs
 {
-    // ========== AUTH DTOs ==========
+    // ========================================
+    // Authentication DTOs
+    // ========================================
+    public class RegisterDto
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public int UserRole { get; set; } // 1=Admin, 2=Partner, 3=Buyer
+        public string? CompanyName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Address { get; set; }
+        public string? AdminCode { get; set; }
+    }
+
     public class LoginDto
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 
-    public class RegisterDto
+    public class LoginResponseDto
     {
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string UserRole { get; set; } = string.Empty;
-        public string? PhoneNumber { get; set; }
-        public string? CompanyName { get; set; }
-        public string? Address { get; set; }
-    }
-
-    public class AuthResponseDto
-    {
-        public int UserId { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string UserRole { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
-        public string? CompanyName { get; set; }
+        public int UserID { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public int UserRole { get; set; }
+        public string? AdminCode { get; set; }
     }
 
-    // ========== PRODUCT DTOs ==========
+    // ========================================
+    // Product DTOs
+    // ========================================
     public class ProductDto
     {
-        public int ProductId { get; set; }
+        public int ProductID { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string? Description { get; set; }
         public decimal Price { get; set; }
-        public decimal CommissionPercentage { get; set; }
-        public int AdminId { get; set; }
+        public int CommissionPercentage { get; set; }
+        public int AdminID { get; set; }
         public string? AdminName { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -50,100 +55,65 @@
         public decimal CommissionPercentage { get; set; }
     }
 
-    public class UpdateProductDto
-    {
-        public string ProductName { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public decimal Price { get; set; }
-        public decimal CommissionPercentage { get; set; }
-        public bool IsActive { get; set; }
-    }
-
-    // ========== SALE DTOs ==========
+    // ========================================
+    // Sale DTOs
+    // ========================================
     public class SaleDto
     {
-        public int SaleId { get; set; }
-        public int ProductId { get; set; }
+        public int SaleID { get; set; }
+        public int ProductID { get; set; }
         public string ProductName { get; set; } = string.Empty;
-        public int PartnerId { get; set; }
+        public int PartnerID { get; set; }
         public string PartnerName { get; set; } = string.Empty;
-        public int BuyerId { get; set; }
+        public int BuyerID { get; set; }
         public string BuyerName { get; set; } = string.Empty;
         public string BuyerEmail { get; set; } = string.Empty;
         public string? BuyerCompany { get; set; }
         public decimal SaleAmount { get; set; }
         public decimal CommissionAmount { get; set; }
         public DateTime SaleDate { get; set; }
-        public string CommissionPaymentStatus { get; set; } = string.Empty;  // ✅ RENAMED
-        public string SalePaymentStatus { get; set; } = string.Empty;        // ✅ RENAMED
-        public string LicenseKey { get; set; } = string.Empty;
+        public string CommissionPaymentStatus { get; set; } = string.Empty;
+        public string SalePaymentStatus { get; set; } = string.Empty;
+        public string? LicenseKey { get; set; }
         public string? Notes { get; set; }
     }
 
     public class CreateSaleDto
     {
-        public int ProductId { get; set; }
-        public int BuyerId { get; set; }
+        public int ProductID { get; set; }
+        public string BuyerEmail { get; set; } = string.Empty;
         public string? Notes { get; set; }
     }
 
-    public class UpdateCommissionPaymentStatusDto  // ✅ RENAMED CLASS
+    public class UpdateCommissionPaymentStatusDto
     {
         public string CommissionPaymentStatus { get; set; } = string.Empty;
     }
 
-    public class UpdateSalePaymentStatusDto  // ✅ RENAMED CLASS
+    public class UpdateSalePaymentStatusDto
     {
         public string SalePaymentStatus { get; set; } = string.Empty;
     }
 
-    // ========== ADMIN DASHBOARD DTOs ==========
-    public class AdminDashboardDto
-    {
-        public AdminStatsDto Stats { get; set; } = new();
-        public List<ProductDto> Products { get; set; } = new();
-        public List<PartnerPerformanceDto> Partners { get; set; } = new();
-        public List<SaleDto> RecentSales { get; set; } = new();
-    }
+    
 
-    public class AdminStatsDto
-    {
-        public int TotalProducts { get; set; }
-        public int TotalSales { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public decimal TotalCommissionPaid { get; set; }
-        public int ActivePartners { get; set; }
-    }
-
-    public class PartnerPerformanceDto
-    {
-        public int PartnerId { get; set; }
-        public string PartnerName { get; set; } = string.Empty;
-        public string PartnerEmail { get; set; } = string.Empty;
-        public string? PartnerCompany { get; set; }
-        public int TotalSales { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public decimal TotalCommission { get; set; }
-    }
-
-    // ========== ADMIN-PARTNER MAPPING DTOs ==========
+    // ========================================
+    // Partner DTOs
+    // ========================================
     public class AddPartnerDto
     {
         public string PartnerEmail { get; set; } = string.Empty;
     }
 
-    public class AdminPartnerMappingDto
+    public class BuyerDto
     {
-        public int MappingId { get; set; }
-        public int AdminId { get; set; }
-        public string AdminName { get; set; } = string.Empty;
-        public string AdminEmail { get; set; } = string.Empty;
-        public string? AdminCompany { get; set; }
-        public int PartnerId { get; set; }
-        public string PartnerName { get; set; } = string.Empty;
-        public string PartnerEmail { get; set; } = string.Empty;
-        public string? PartnerCompany { get; set; }
-        public DateTime MappedAt { get; set; }
-        public bool IsActive { get; set; }
+        public int BuyerID { get; set; }
+        public string BuyerName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? CompanyName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public int TotalPurchases { get; set; }
+        public decimal TotalAmountSpent { get; set; }
+        public DateTime? LastPurchaseDate { get; set; }
     }
 }
