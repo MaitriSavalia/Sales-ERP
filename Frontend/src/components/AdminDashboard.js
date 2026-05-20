@@ -4,7 +4,6 @@ import { Package, DollarSign, ShoppingCart, TrendingUp, Users } from 'lucide-rea
 import useIsMobile from '../hooks/useIsMobile';
 
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(n || 0);
-const toLocal = (d) => { if (!d) return new Date(NaN); const s = typeof d === 'string' && !d.endsWith('Z') && !d.includes('+') ? d + 'Z' : d; return new Date(s); };
 
 
 function AdminDashboard() {
@@ -26,8 +25,12 @@ function AdminDashboard() {
         adminService.getProducts(),
         adminService.getMyPartners(),
       ]);
-      setStats(dashRes.data);
-      setSales(salesRes.data.slice(0, 5));
+      const allSales = salesRes.data;
+      const computedPaidCommission = allSales
+        .filter(s => s.commissionPaymentStatus === 'Completed')
+        .reduce((sum, s) => sum + (s.commissionAmount || 0), 0);
+      setStats({ ...dashRes.data, totalCommissionPaid: computedPaidCommission });
+      setSales(allSales.slice(0, 5));
       setProducts(prodRes.data);
 
       // Build partner performance from sales
@@ -39,7 +42,6 @@ function AdminDashboard() {
             partnerID: s.partnerID,
             partnerName: s.partnerName,
             partnerEmail: '',
-            partnerCompany: 'N/A',
             totalSales: 0,
             totalRevenue: 0,
             totalCommission: 0,
@@ -50,12 +52,12 @@ function AdminDashboard() {
         partnerMap[s.partnerID].totalCommission += s.commissionAmount;
       });
 
-      // Merge email/company from partner list (fields: userID, email, companyName)
+      // Merge email from partner list
       const partnerList = partRes.data;
       Object.values(partnerMap).forEach(p => {
-        const found = partnerList.find(pl => pl.userID === p.partnerID);
-        p.partnerEmail = found?.email || '';
-        p.partnerCompany = found?.companyName || 'N/A';
+        const found = partnerList.find(pl => pl.partnerID === p.partnerID);
+        p.partnerEmail = found?.partnerEmail || '';
+        p.partnerCompany = found?.partnerCompany || 'N/A';
       });
 
       setPartners(Object.values(partnerMap).sort((a, b) => b.totalRevenue - a.totalRevenue));
@@ -66,14 +68,26 @@ function AdminDashboard() {
     }
   };
 
-  const handleStatusUpdate = async (saleID, newStatus) => {
+  const handleStatusUpdate = async (saleId, newStatus) => {
     try {
-      setUpdating(saleID);
-      await adminService.updateCommissionStatus(saleID, { commissionPaymentStatus: newStatus });
-      setSales(prev => prev.map(s => s.saleID === saleID ? { ...s, commissionPaymentStatus: newStatus } : s));
+      setUpdating(saleId);
+      const tabId = sessionStorage.getItem('tabId');
+      const token = sessionStorage.getItem(`token_${tabId}`);
+      const res = await fetch(`http://localhost:5261/api/admin/sales/${saleId}/commission-status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ commissionPaymentStatus: newStatus }),
+      });
+
+      if (!res.ok) throw new Error('Failed to update');
+
+      setSales(prev => prev.map(s => s.saleID === saleId ? { ...s, commissionPaymentStatus: newStatus } : s));
     } catch (err) {
       console.error('Update status error:', err);
-      alert(err.response?.data?.message || 'Failed to update status');
+      alert(err.message || 'Failed to update status');
     } finally {
       setUpdating(null);
     }
@@ -162,7 +176,7 @@ function AdminDashboard() {
                     onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                     onMouseLeave={e => e.currentTarget.style.background = 'white'}>
                     <td style={{ padding: '0.875rem 1rem', color: '#64748b', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
-                      {toLocal(s.saleDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {new Date(s.saleDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td style={{ padding: '0.875rem 1rem', fontWeight: '600', color: '#1e293b', fontSize: '0.9rem' }}>{s.productName}</td>
                     <td style={{ padding: '0.875rem 1rem', color: '#64748b', fontSize: '0.9rem' }}>{s.partnerName}</td>
@@ -217,7 +231,7 @@ function AdminDashboard() {
           <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>Your Products</h2>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
             {products.map(p => (
-              <div key={p.productID} style={{
+              <div key={p.productId} style={{
                 border: '1px solid #e2e8f0',
                 borderRadius: '10px',
                 padding: '1rem',
